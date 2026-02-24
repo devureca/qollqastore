@@ -1,0 +1,127 @@
+---
+
+---
+
+<!-- Modal overlay -->
+<div
+    id="modal"
+    class="hidden fixed inset-0 z-50 items-center justify-center p-4 md:p-8"
+    style="background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);"
+>
+    <div
+        id="modal-box"
+        class="relative w-full overflow-hidden"
+        style="background: var(--bg); border-radius: 24px; max-width: 860px; max-height: 90vh; overflow-y: auto;"
+    >
+        <!-- Botón cerrar -->
+        <button
+            id="close-modal"
+            class="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200"
+            style="background: var(--bg-card); border: none; color: var(--text-muted); cursor: pointer;"
+        >
+            ✕
+        </button>
+
+        <!-- Contenido -->
+        <div id="modal-content" class="grid grid-cols-1 md:grid-cols-2"></div>
+    </div>
+</div>
+
+<script define:vars={{}}>
+    window.__openModal = function (data, moneda, primary) {
+        const modal = document.getElementById("modal");
+        const modalContent = document.getElementById("modal-content");
+        const FIXED = [
+            "id",
+            "nombre",
+            "descripcion",
+            "imagen",
+            "precio",
+            "precio_oferta",
+            "disponible",
+            "categoria",
+            "novedad",
+        ];
+        const extras = Object.entries(data).filter(
+            ([k, v]) => !FIXED.includes(k) && v,
+        );
+
+        modalContent.innerHTML = `
+        <!-- Imagen -->
+        <div style="aspect-ratio: 1/1; background: var(--bg-card); overflow: hidden; border-radius: 24px 0 0 24px;" class="hidden md:block">
+          ${
+              data.imagen
+                  ? `<img src="${data.imagen}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
+                  : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">📦</div>`
+          }
+        </div>
+  
+        <!-- Imagen mobile (arriba) -->
+        <div class="block md:hidden" style="height: 280px; background: var(--bg-card); overflow: hidden; border-radius: 24px 24px 0 0;">
+          ${
+              data.imagen
+                  ? `<img src="${data.imagen}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
+                  : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">📦</div>`
+          }
+        </div>
+  
+        <!-- Info -->
+        <div style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+          ${data.categoria ? `<p style="font-size:0.7rem;font-weight:700;color:${primary};letter-spacing:0.1em;text-transform:uppercase;">${data.categoria}</p>` : ""}
+          <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:0.03em;line-height:1.1;color:var(--text);">${data.nombre}</h2>
+          ${data.descripcion ? `<p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">${data.descripcion}</p>` : ""}
+  
+          ${
+              extras.length > 0
+                  ? `
+            <div style="display:flex;flex-direction:column;gap:0.4rem;padding:1rem;background:var(--bg-card);border-radius:12px;">
+              ${extras
+                  .map(
+                      ([k, v]) => `
+                <div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+                  <span style="color:var(--text-muted);text-transform:capitalize;">${k}</span>
+                  <span style="font-weight:600;color:var(--text);">${v}</span>
+                </div>
+              `,
+                  )
+                  .join("")}
+            </div>
+          `
+                  : ""
+          }
+  
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+            ${
+                data.precio_oferta
+                    ? `<span style="font-size:2rem;font-weight:700;color:${primary};">${moneda}${Number(data.precio_oferta).toLocaleString()}</span>
+                 <span style="font-size:1rem;text-decoration:line-through;color:var(--text-muted);">${moneda}${Number(data.precio).toLocaleString()}</span>`
+                    : `<span style="font-size:2rem;font-weight:700;color:${primary};">${moneda}${Number(data.precio).toLocaleString()}</span>`
+            }
+          </div>
+  
+          ${
+              data.whatsapp
+                  ? `
+            <a href="https://wa.me/${data.whatsapp}?text=Hola!%20Me%20interesa%20${encodeURIComponent(data.nombre)}" target="_blank"
+              style="background:#25D366;color:#fff;border-radius:12px;padding:14px;text-align:center;font-weight:700;font-size:0.9rem;display:block;text-decoration:none;margin-top:0.5rem;">
+              Consultar por WhatsApp
+            </a>
+          `
+                  : ""
+          }
+        </div>
+      `;
+
+        modal.style.display = "flex";
+    };
+
+    document.getElementById("close-modal").addEventListener("click", () => {
+        document.getElementById("modal").style.display = "none";
+    });
+
+    document.getElementById("modal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("modal")) {
+            document.getElementById("modal").style.display = "none";
+        }
+    });
+</script>

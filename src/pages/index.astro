@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
 import ProductCard from "../components/ProductCard.astro";
+import ProductModal from "../components/ProductModal.astro";
 import { getProducts, getConfig, getSlides, getReviews } from "../lib/sheet";
 
 const config = await getConfig();
@@ -178,19 +179,8 @@ const catalogo = products
 		</p>
 	</footer>
 
-	<!-- Modal producto -->
-	<div
-		id="modal"
-		class="hidden fixed inset-0 z-50 items-center justify-center p-4"
-		style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);"
-	>
-		<div
-			id="modal-content"
-			class="rounded-2xl overflow-hidden w-full max-w-xl max-h-[90vh] overflow-y-auto"
-			style="background: var(--bg);"
-		>
-		</div>
-	</div>
+	<!-- Modal -->
+	<ProductModal />
 
 	<!-- WhatsApp flotante -->
 	{
@@ -214,83 +204,13 @@ const catalogo = products
 			.getPropertyValue("--color-primary")
 			.trim();
 
-		const modal = document.getElementById("modal");
-		const modalContent = document.getElementById("modal-content");
-		const FIXED = [
-			"id",
-			"nombre",
-			"descripcion",
-			"imagen",
-			"precio",
-			"precio_oferta",
-			"disponible",
-			"categoria",
-			"novedad",
-		];
-
 		document.querySelectorAll(".product-card").forEach((card) => {
 			card.addEventListener("click", () => {
 				const data = JSON.parse(
 					card.getAttribute("data-product") || "{}",
 				);
-				const extras = Object.entries(data).filter(
-					([k, v]) => !FIXED.includes(k) && v,
-				);
-
-				modalContent.innerHTML = `
-          <div style="display:grid;grid-template-columns:1fr 1fr;min-height:420px;">
-            <div style="background:var(--bg-card);border-radius:16px 0 0 16px;overflow:hidden;">
-              ${
-					data.imagen
-						? `<img src="${data.imagen}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
-						: `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;">📦</div>`
-				}
-            </div>
-            <div style="padding:1.75rem;display:flex;flex-direction:column;gap:0.875rem;background:var(--bg);">
-              <button id="close-modal" style="align-self:flex-end;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">✕</button>
-              ${data.categoria ? `<p style="font-size:0.7rem;font-weight:700;color:${PRIMARY};letter-spacing:0.1em;text-transform:uppercase;">${data.categoria}</p>` : ""}
-              <h2 style="font-family:var(--font-display);font-size:1.75rem;letter-spacing:0.05em;line-height:1.1;color:var(--text);">${data.nombre}</h2>
-              ${data.descripcion ? `<p style="font-size:0.875rem;color:var(--text-muted);line-height:1.6;">${data.descripcion}</p>` : ""}
-              ${
-					extras.length > 0
-						? `
-                <div style="display:flex;flex-direction:column;gap:0.35rem;">
-                  ${extras
-						.map(
-							([k, v]) => `
-                    <div style="display:flex;gap:0.5rem;font-size:0.82rem;">
-                      <span style="color:var(--text-muted);text-transform:capitalize;">${k}:</span>
-                      <span style="font-weight:600;color:var(--text);">${v}</span>
-                    </div>
-                  `,
-						)
-						.join("")}
-                </div>
-              `
-						: ""
-				}
-              <div style="display:flex;align-items:center;gap:0.75rem;">
-                ${
-					data.precio_oferta
-						? `<span style="font-size:0.9rem;text-decoration:line-through;color:var(--text-muted);">${moneda}${Number(data.precio).toLocaleString()}</span>
-                     <span style="font-size:1.5rem;font-weight:700;color:${PRIMARY};">${moneda}${Number(data.precio_oferta).toLocaleString()}</span>`
-						: `<span style="font-size:1.5rem;font-weight:700;color:${PRIMARY};">${moneda}${Number(data.precio).toLocaleString()}</span>`
-				}
-              </div>
-            </div>
-          </div>
-        `;
-				modal.style.display = "flex";
-				document
-					.getElementById("close-modal")
-					?.addEventListener("click", () => {
-						modal.style.display = "none";
-					});
+				window.__openModal(data, moneda, PRIMARY);
 			});
-		});
-
-		modal.addEventListener("click", (e) => {
-			if (e.target === modal) modal.style.display = "none";
 		});
 	</script>
 </Layout>
