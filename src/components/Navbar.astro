@@ -1,0 +1,162 @@
+---
+import type { Config } from "../types";
+import {
+    IconInstagram,
+    IconFacebook,
+    IconTiktok,
+    IconWhatsapp,
+    IconSun,
+    IconMoon,
+} from "../lib/icons";
+
+interface Props {
+    config: Config;
+}
+
+const { config } = Astro.props;
+---
+
+<header
+    class="sticky top-0 z-50 border-b"
+    style="background: var(--bg); border-color: var(--border);"
+>
+    <div
+        class="max-w-7xl mx-auto px-[5%] flex items-center justify-between h-16"
+    >
+        <!-- Logo -->
+        <a
+            href="/"
+            class="text-3xl tracking-widest font-bold"
+            style="font-family: var(--font-display); color: var(--color-primary);"
+        >
+            {config.nombre}
+        </a>
+
+        <!-- Links centro -->
+        <nav class="hidden md:flex items-center gap-8">
+            <a
+                href="/"
+                class="nav-link text-sm font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Inicio</a
+            >
+            <a
+                href="/#novedades"
+                class="nav-link text-sm font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Novedades</a
+            >
+            <a
+                href="/#ofertas"
+                class="nav-link text-sm font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Ofertas</a
+            >
+            <a
+                href="/catalogo"
+                class="nav-link text-sm font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Catálogo</a
+            >
+        </nav>
+
+        <!-- Derecha: redes + darkmode -->
+        <div class="flex items-center gap-3">
+            {
+                config.instagram && (
+                    <a
+                        href={config.instagram}
+                        target="_blank"
+                        class="icon-link transition-colors duration-200"
+                        aria-label="Instagram"
+                        style="color: var(--text-muted);"
+                        set:html={IconInstagram}
+                    />
+                )
+            }
+
+            {
+                config.facebook && (
+                    <a
+                        href={config.facebook}
+                        target="_blank"
+                        class="icon-link transition-colors duration-200"
+                        aria-label="Facebook"
+                        style="color: var(--text-muted);"
+                        set:html={IconFacebook}
+                    />
+                )
+            }
+
+            {
+                config.tiktok && (
+                    <a
+                        href={`https://tiktok.com/@${config.tiktok}`}
+                        target="_blank"
+                        class="icon-link transition-colors duration-200"
+                        aria-label="TikTok"
+                        style="color: var(--text-muted);"
+                        set:html={IconTiktok}
+                    />
+                )
+            }
+
+            {
+                config.whatsapp && (
+                    <a
+                        href={`https://wa.me/${config.whatsapp}`}
+                        target="_blank"
+                        class="icon-link transition-colors duration-200"
+                        aria-label="WhatsApp"
+                        style="color: var(--text-muted);"
+                        set:html={IconWhatsapp}
+                    />
+                )
+            }
+
+            <!-- Dark mode toggle -->
+            <button
+                id="darkmode-btn"
+                aria-label="Toggle dark mode"
+                class="flex items-center justify-center w-9 h-9 rounded-lg border transition-all duration-200"
+                style="border-color: var(--border); color: var(--text-muted); background: none;"
+            >
+                <span id="icon-sun" style="display:none;" set:html={IconSun} />
+                <span id="icon-moon" set:html={IconMoon} />
+            </button>
+        </div>
+    </div>
+</header>
+
+<style>
+    .nav-link:hover {
+        color: var(--color-primary) !important;
+    }
+    .icon-link:hover {
+        color: var(--color-primary) !important;
+    }
+</style>
+
+<script>
+    const btn = document.getElementById("darkmode-btn")!;
+    const iconSun = document.getElementById("icon-sun")!;
+    const iconMoon = document.getElementById("icon-moon")!;
+
+    function applyTheme(dark: boolean) {
+        document.documentElement.setAttribute(
+            "data-theme",
+            dark ? "dark" : "light",
+        );
+        iconSun.style.display = dark ? "flex" : "none";
+        iconMoon.style.display = dark ? "none" : "flex";
+        localStorage.setItem("theme", dark ? "dark" : "light");
+    }
+
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+    ).matches;
+    applyTheme(saved ? saved === "dark" : prefersDark);
+
+    btn.addEventListener("click", () => {
+        const isDark =
+            document.documentElement.getAttribute("data-theme") === "dark";
+        applyTheme(!isDark);
+    });
+</script>

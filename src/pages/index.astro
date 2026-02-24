@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
 import {
 	getProducts,
 	getConfig,
@@ -16,68 +17,41 @@ const categories = getCategories(products);
 ---
 
 <Layout title={config.nombre} color={config.color_primario}>
-	<!-- Navbar -->
-	<nav
-		style={`background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100;`}
-	>
-		<div
-			style="max-width: 1280px; margin: 0 auto; padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 64px;"
-		>
-			<span
-				style={`font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 0.1em; color: var(--color-primary)`}
-			>
-				{config.nombre}
-			</span>
-			<div style="display: flex; gap: 1.5rem; align-items: center;">
-				{
-					config.whatsapp && (
-						<a
-							href={`https://wa.me/${config.whatsapp}`}
-							target="_blank"
-							style="font-size: 0.85rem; font-weight: 600; color: #25D366;"
-						>
-							WhatsApp
-						</a>
-					)
-				}
-				{
-					config.instagram && (
-						<a
-							href={config.instagram}
-							target="_blank"
-							style="font-size: 0.85rem; color: #555;"
-						>
-							Instagram
-						</a>
-					)
-				}
-			</div>
-		</div>
-	</nav>
+	<Navbar config={config} />
 
 	<!-- Hero -->
 	{
 		slides.length > 0 && (
-			<div style="padding: 24px 24px 0; ">
+			<div class="px-6 pt-6">
 				<div
 					id="hero"
-					style="position: relative; border-radius: 24px; overflow: hidden; height: 80vh; background: #111;"
+					class="relative rounded-3xl overflow-hidden"
+					style="height: 80vh; background: #111;"
 				>
 					{slides.map((slide, i) => (
 						<div
-							class="slide"
+							class="slide absolute inset-0 bg-cover bg-center transition-opacity duration-700"
 							data-index={i}
-							style={`position: absolute; inset: 0; opacity: ${i === 0 ? 1 : 0}; transition: opacity 0.6s ease; background-image: url('${slide.imagen}'); background-size: cover; background-position: center;`}
+							style={`opacity: ${i === 0 ? 1 : 0}; background-image: url('${slide.imagen}');`}
 						>
-							<div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);" />
-							<div style="position: absolute; bottom: 3rem; left: 3rem;">
+							<div
+								class="absolute inset-0"
+								style="background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);"
+							/>
+							<div class="absolute bottom-12 left-12">
 								{slide.titulo && (
-									<h1 style="font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); color: #fff; letter-spacing: 0.05em; line-height: 1;">
+									<h1
+										class="text-white tracking-wider"
+										style="font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1;"
+									>
 										{slide.titulo}
 									</h1>
 								)}
 								{slide.subtitulo && (
-									<p style="font-size: 1rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem;">
+									<p
+										class="mt-2 text-base"
+										style="color: rgba(255,255,255,0.7);"
+									>
 										{slide.subtitulo}
 									</p>
 								)}
@@ -89,74 +63,93 @@ const categories = getCategories(products);
 		)
 	}
 
-	<!-- Categorías -->
-	{
-		categories.length > 1 && (
-			<div style="max-width: 1280px; margin: 3rem auto 0; padding: 0 5%;">
-				<div
-					id="categorias"
-					style="display: flex; gap: 0.75rem; flex-wrap: wrap;"
-				>
-					{categories.map((cat) => (
-						<button
-							class="cat-btn"
-							data-cat={cat}
-							style={`padding: 8px 20px; border-radius: 100px; border: 1px solid #ddd; background: ${cat === "Todos" ? "var(--color-primary)" : "#fff"}; color: ${cat === "Todos" ? "#fff" : "#555"}; font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;`}
-						>
-							{cat}
-						</button>
-					))}
-				</div>
-			</div>
-		)
-	}
-
-	<!-- Productos -->
-	<div style="max-width: 1280px; margin: 2rem auto 4rem; padding: 0 5%;">
-		<div
-			id="productos"
-			style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;"
+	<!-- Novedades -->
+	<div id="novedades" class="max-w-7xl mx-auto px-[5%] py-16">
+		<h2
+			class="section-title"
+			style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
 		>
+			NOVEDADES
+		</h2>
+		<p class="text-sm mb-8" style="color: var(--text-muted);">
+			Lo recién llegado
+		</p>
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 			{
 				products
-					.filter((p) => p.disponible?.toLowerCase() !== "no")
+					.filter((p) => p.novedad?.toLowerCase() === "si")
+					.slice(0, 4)
 					.map((product) => (
 						<div
-							class="product-card"
-							data-cat={product.categoria}
+							class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
 							data-product={JSON.stringify(product)}
-							style="cursor: pointer; border-radius: 16px; overflow: hidden; background: #f9f9f9; transition: transform 0.2s, box-shadow 0.2s;"
-							onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.1)'"
-							onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='none'"
+							style="background: var(--bg-card);"
 						>
-							<div style="aspect-ratio: 3/4; overflow: hidden; background: #eee;">
+							<div
+								class="aspect-3/4 overflow-hidden"
+								style="background: var(--bg-secondary);"
+							>
 								{product.imagen ? (
 									<img
 										src={product.imagen}
 										alt={product.nombre}
-										style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s;"
+										class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
 									/>
 								) : (
-									<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 3rem;">
+									<div class="w-full h-full flex items-center justify-center text-5xl">
 										📦
 									</div>
 								)}
 							</div>
-							<div style="padding: 1rem;">
+							<div class="p-4">
 								{product.categoria && (
-									<p style="font-size: 0.7rem; font-weight: 700; color: var(--color-primary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;">
+									<p
+										class="text-xs font-bold uppercase tracking-widest mb-1"
+										style="color: var(--color-primary);"
+									>
 										{product.categoria}
 									</p>
 								)}
-								<p style="font-weight: 700; font-size: 0.95rem; color: #111; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+								<p
+									class="font-bold text-sm mb-1 truncate"
+									style="color: var(--text);"
+								>
 									{product.nombre}
 								</p>
-								<p
-									style={`font-weight: 700; font-size: 1.1rem; color: var(--color-primary);`}
-								>
-									{config.moneda}
-									{Number(product.precio).toLocaleString()}
-								</p>
+								<div class="flex items-center gap-2">
+									{product.precio_oferta ? (
+										<>
+											<span
+												class="text-xs line-through"
+												style="color: var(--text-muted);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio,
+												).toLocaleString()}
+											</span>
+											<span
+												class="font-bold text-base"
+												style="color: var(--color-primary);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio_oferta,
+												).toLocaleString()}
+											</span>
+										</>
+									) : (
+										<span
+											class="font-bold text-base"
+											style="color: var(--color-primary);"
+										>
+											{config.moneda}
+											{Number(
+												product.precio,
+											).toLocaleString()}
+										</span>
+									)}
+								</div>
 							</div>
 						</div>
 					))
@@ -164,37 +157,260 @@ const categories = getCategories(products);
 		</div>
 	</div>
 
+	<!-- Ofertas -->
+	{
+		products.some((p) => p.precio_oferta) && (
+			<div
+				id="ofertas"
+				class="py-16"
+				style="background: var(--bg-secondary);"
+			>
+				<div class="max-w-7xl mx-auto px-[5%]">
+					<h2
+						class="section-title"
+						style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
+					>
+						OFERTAS
+					</h2>
+					<p class="text-sm mb-8" style="color: var(--text-muted);">
+						No te lo pierdas
+					</p>
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+						{products
+							.filter((p) => p.precio_oferta)
+							.slice(0, 4)
+							.map((product) => (
+								<div
+									class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
+									data-product={JSON.stringify(product)}
+									style="background: var(--bg);"
+								>
+									<div
+										class="aspect-3/4 overflow-hidden relative"
+										style="background: var(--bg-card);"
+									>
+										{product.imagen ? (
+											<img
+												src={product.imagen}
+												alt={product.nombre}
+												class="w-full h-full object-cover"
+											/>
+										) : (
+											<div class="w-full h-full flex items-center justify-center text-5xl">
+												📦
+											</div>
+										)}
+										<span
+											class="absolute top-3 left-3 text-xs font-bold px-2 py-1 rounded-full text-white"
+											style="background: var(--color-primary);"
+										>
+											OFERTA
+										</span>
+									</div>
+									<div class="p-4">
+										{product.categoria && (
+											<p
+												class="text-xs font-bold uppercase tracking-widest mb-1"
+												style="color: var(--color-primary);"
+											>
+												{product.categoria}
+											</p>
+										)}
+										<p
+											class="font-bold text-sm mb-1 truncate"
+											style="color: var(--text);"
+										>
+											{product.nombre}
+										</p>
+										<div class="flex items-center gap-2">
+											<span
+												class="text-xs line-through"
+												style="color: var(--text-muted);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio,
+												).toLocaleString()}
+											</span>
+											<span
+												class="font-bold text-base"
+												style="color: var(--color-primary);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio_oferta,
+												).toLocaleString()}
+											</span>
+										</div>
+									</div>
+								</div>
+							))}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	<!-- Catálogo (random) -->
+	<div class="max-w-7xl mx-auto px-[5%] py-16">
+		<h2
+			class="section-title"
+			style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
+		>
+			CATÁLOGO
+		</h2>
+		<p class="text-sm mb-8" style="color: var(--text-muted);">
+			Explorá todo el stock
+		</p>
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+			{
+				products
+					.filter((p) => p.disponible?.toLowerCase() !== "no")
+					.sort(() => Math.random() - 0.5)
+					.slice(0, 8)
+					.map((product) => (
+						<div
+							class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
+							data-product={JSON.stringify(product)}
+							style="background: var(--bg-card);"
+						>
+							<div
+								class="aspect-3/4 overflow-hidden"
+								style="background: var(--bg-secondary);"
+							>
+								{product.imagen ? (
+									<img
+										src={product.imagen}
+										alt={product.nombre}
+										class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+									/>
+								) : (
+									<div class="w-full h-full flex items-center justify-center text-5xl">
+										📦
+									</div>
+								)}
+							</div>
+							<div class="p-4">
+								{product.categoria && (
+									<p
+										class="text-xs font-bold uppercase tracking-widest mb-1"
+										style="color: var(--color-primary);"
+									>
+										{product.categoria}
+									</p>
+								)}
+								<p
+									class="font-bold text-sm mb-1 truncate"
+									style="color: var(--text);"
+								>
+									{product.nombre}
+								</p>
+								<div class="flex items-center gap-2">
+									{product.precio_oferta ? (
+										<>
+											<span
+												class="text-xs line-through"
+												style="color: var(--text-muted);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio,
+												).toLocaleString()}
+											</span>
+											<span
+												class="font-bold text-base"
+												style="color: var(--color-primary);"
+											>
+												{config.moneda}
+												{Number(
+													product.precio_oferta,
+												).toLocaleString()}
+											</span>
+										</>
+									) : (
+										<span
+											class="font-bold text-base"
+											style="color: var(--color-primary);"
+										>
+											{config.moneda}
+											{Number(
+												product.precio,
+											).toLocaleString()}
+										</span>
+									)}
+								</div>
+							</div>
+						</div>
+					))
+			}
+
+			<!-- Card ver catálogo completo -->
+			<a
+				href="/catalogo"
+				class="rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-all duration-200 hover:border-solid min-h-[300px]"
+				style="border-color: var(--border);"
+				onmouseenter="this.style.borderColor='var(--color-primary)'"
+				onmouseleave="this.style.borderColor='var(--border)'"
+			>
+				<span class="text-4xl">→</span>
+				<p
+					class="font-bold text-sm text-center px-4"
+					style="color: var(--text-muted);"
+				>
+					Ver catálogo completo
+				</p>
+			</a>
+		</div>
+	</div>
+
 	<!-- Reseñas -->
 	{
 		reviews.length > 0 && (
-			<div style="background: #f7f6f3; padding: clamp(48px, 6vw, 80px) 5%;">
-				<div style="max-width: 1280px; margin: 0 auto;">
-					<h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 2rem; letter-spacing: 0.05em;">
+			<div class="py-16" style="background: var(--bg-secondary);">
+				<div class="max-w-7xl mx-auto px-[5%]">
+					<h2
+						class="section-title"
+						style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
+					>
 						CLIENTES FELICES
 					</h2>
-					<div style="display: flex; flex-direction: column; gap: 0;">
+					<p class="text-sm mb-8" style="color: var(--text-muted);">
+						Lo que dicen de nosotros
+					</p>
+					<div class="flex flex-col">
 						{reviews.map((review, i) => (
 							<div
-								style={`padding: 1.5rem 0; border-bottom: ${i < reviews.length - 1 ? "1px solid rgba(0,0,0,0.08)" : "none"}; display: grid; grid-template-columns: 200px 1fr; gap: 2rem; align-items: center;`}
+								class={`py-6 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-center ${i < reviews.length - 1 ? "border-b" : ""}`}
+								style={`border-color: var(--border);`}
 							>
-								<div style="display: flex; align-items: center; gap: 0.75rem;">
+								<div class="flex items-center gap-3">
 									<div
-										style={`width: 44px; height: 44px; border-radius: 50%; background: var(--color-primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.2rem; color: #fff; flex-shrink: 0;`}
+										class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-white font-bold"
+										style="background: var(--color-primary); font-family: var(--font-display); font-size: 1.2rem;"
 									>
 										{review.nombre.charAt(0).toUpperCase()}
 									</div>
 									<div>
-										<p style="font-weight: 700; font-size: 0.9rem;">
+										<p
+											class="font-bold text-sm"
+											style="color: var(--text);"
+										>
 											{review.nombre}
 										</p>
-										<p style="color: #f59e0b; font-size: 0.85rem;">
+										<p
+											class="text-sm"
+											style="color: #f59e0b;"
+										>
 											{"★".repeat(
 												Number(review.estrellas),
 											)}
 										</p>
 									</div>
 								</div>
-								<p style="color: #555; font-size: 0.95rem; line-height: 1.7;">
+								<p
+									class="text-sm leading-relaxed"
+									style="color: var(--text-muted);"
+								>
 									"{review.texto}"
 								</p>
 							</div>
@@ -206,14 +422,12 @@ const categories = getCategories(products);
 	}
 
 	<!-- Footer -->
-	<footer
-		style="background: #0d0d0d; color: rgba(255,255,255,0.4); padding: 2rem 5%; text-align: center;"
-	>
-		<p style="font-family: var(--font-body); font-size: 0.8rem;">
+	<footer class="py-8 text-center" style="background: #0d0d0d;">
+		<p class="text-xs" style="color: rgba(255,255,255,0.3);">
 			© {new Date().getFullYear()}
 			{config.nombre} · Powered by <span
-				style="color: var(--color-primary); font-weight: 700;"
-				>QollqaStore</span
+				class="font-bold"
+				style="color: var(--color-primary);">QollqaStore</span
 			>
 		</p>
 	</footer>
@@ -221,11 +435,13 @@ const categories = getCategories(products);
 	<!-- Modal producto -->
 	<div
 		id="modal"
-		style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 1rem;"
+		class="hidden fixed inset-0 z-50 items-center justify-center p-4"
+		style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);"
 	>
 		<div
 			id="modal-content"
-			style="background: #fff; border-radius: 20px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;"
+			class="rounded-2xl overflow-hidden w-full max-w-xl max-h-[90vh] overflow-y-auto"
+			style="background: var(--bg);"
 		>
 		</div>
 	</div>
@@ -236,9 +452,9 @@ const categories = getCategories(products);
 			<a
 				href={`https://wa.me/${config.whatsapp}`}
 				target="_blank"
-				style="position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(37,211,102,0.4); z-index: 150; transition: transform 0.2s;"
-				onmouseenter="this.style.transform='scale(1.1)'"
-				onmouseleave="this.style.transform='scale(1)'"
+				class="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center z-40 transition-transform duration-200 hover:scale-110"
+				style="background: #25D366; box-shadow: 0 4px 16px rgba(37,211,102,0.4);"
+				aria-label="WhatsApp"
 			>
 				<svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
 					<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -252,7 +468,7 @@ const categories = getCategories(products);
 			.getPropertyValue("--color-primary")
 			.trim();
 
-		// Slider
+		// Slider autoplay
 		const slides = document.querySelectorAll(".slide");
 		let current = 0;
 		if (slides.length > 1) {
@@ -263,74 +479,58 @@ const categories = getCategories(products);
 			}, 5000);
 		}
 
-		// Filtros categoría
-		const catBtns = document.querySelectorAll(".cat-btn");
-		const cards = document.querySelectorAll(".product-card");
-		catBtns.forEach((btn) => {
-			btn.addEventListener("click", () => {
-				const cat = btn.getAttribute("data-cat");
-				catBtns.forEach((b) => {
-					(b as HTMLElement).style.background = "#fff";
-					(b as HTMLElement).style.color = "#555";
-					(b as HTMLElement).style.borderColor = "#ddd";
-				});
-				(btn as HTMLElement).style.background = PRIMARY;
-				(btn as HTMLElement).style.color = "#fff";
-				(btn as HTMLElement).style.borderColor = PRIMARY;
-				cards.forEach((card) => {
-					const cardCat = card.getAttribute("data-cat");
-					(card as HTMLElement).style.display =
-						cat === "Todos" || cardCat === cat ? "block" : "none";
-				});
-			});
-		});
-
 		// Modal producto
 		const modal = document.getElementById("modal")!;
 		const modalContent = document.getElementById("modal-content")!;
+		const fixed = [
+			"id",
+			"nombre",
+			"descripcion",
+			"imagen",
+			"precio",
+			"precio_oferta",
+			"disponible",
+			"categoria",
+			"novedad",
+		];
 
-		cards.forEach((card) => {
+		document.querySelectorAll(".product-card").forEach((card) => {
 			card.addEventListener("click", () => {
 				const data = JSON.parse(
 					card.getAttribute("data-product") || "{}",
 				);
-				const fixed = [
-					"id",
-					"nombre",
-					"descripcion",
-					"imagen",
-					"precio",
-					"disponible",
-					"categoria",
-				];
 				const extras = Object.entries(data).filter(
-					([k]) => !fixed.includes(k) && data[k],
+					([k, v]) => !fixed.includes(k) && v,
 				);
+				const moneda =
+					document
+						.querySelector('meta[name="moneda"]')
+						?.getAttribute("content") || "$";
 
 				modalContent.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 400px;">
-            <div style="background: #f5f5f5; border-radius: 20px 0 0 20px; overflow: hidden;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 420px;">
+            <div style="background: var(--bg-card); border-radius: 16px 0 0 16px; overflow: hidden;">
               ${
 					data.imagen
 						? `<img src="${data.imagen}" alt="${data.nombre}" style="width: 100%; height: 100%; object-fit: cover;" />`
-						: `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem;">📦</div>`
+						: `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;">📦</div>`
 				}
             </div>
-            <div style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem;">
-              <button id="close-modal" style="align-self: flex-end; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;">✕</button>
-              ${data.categoria ? `<p style="font-size: 0.72rem; font-weight: 700; color: ${PRIMARY}; letter-spacing: 0.1em; text-transform: uppercase;">${data.categoria}</p>` : ""}
-              <h2 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.05em; line-height: 1.1;">${data.nombre}</h2>
-              ${data.descripcion ? `<p style="font-size: 0.875rem; color: #666; line-height: 1.6;">${data.descripcion}</p>` : ""}
+            <div style="padding: 1.75rem; display: flex; flex-direction: column; gap: 0.875rem; background: var(--bg);">
+              <button id="close-modal" style="align-self: flex-end; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">✕</button>
+              ${data.categoria ? `<p style="font-size: 0.7rem; font-weight: 700; color: ${PRIMARY}; letter-spacing: 0.1em; text-transform: uppercase;">${data.categoria}</p>` : ""}
+              <h2 style="font-family: var(--font-display); font-size: 1.75rem; letter-spacing: 0.05em; line-height: 1.1; color: var(--text);">${data.nombre}</h2>
+              ${data.descripcion ? `<p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">${data.descripcion}</p>` : ""}
               ${
 					extras.length > 0
 						? `
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                   ${extras
 						.map(
 							([k, v]) => `
                     <div style="display: flex; gap: 0.5rem; font-size: 0.82rem;">
-                      <span style="color: #999; text-transform: capitalize;">${k}:</span>
-                      <span style="font-weight: 600;">${v}</span>
+                      <span style="color: var(--text-muted); text-transform: capitalize;">${k}:</span>
+                      <span style="font-weight: 600; color: var(--text);">${v}</span>
                     </div>
                   `,
 						)
@@ -339,12 +539,19 @@ const categories = getCategories(products);
               `
 						: ""
 				}
-              <p style="font-size: 1.5rem; font-weight: 700; color: ${PRIMARY};">$${Number(data.precio).toLocaleString()}</p>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                ${
+					data.precio_oferta
+						? `<span style="font-size: 0.9rem; text-decoration: line-through; color: var(--text-muted);">${moneda}${Number(data.precio).toLocaleString()}</span>
+                     <span style="font-size: 1.5rem; font-weight: 700; color: ${PRIMARY};">${moneda}${Number(data.precio_oferta).toLocaleString()}</span>`
+						: `<span style="font-size: 1.5rem; font-weight: 700; color: ${PRIMARY};">${moneda}${Number(data.precio).toLocaleString()}</span>`
+				}
+              </div>
               ${
 					data.whatsapp
 						? `
                 <a href="https://wa.me/${data.whatsapp}?text=Hola! Me interesa ${encodeURIComponent(data.nombre)}" target="_blank"
-                  style="background: #25D366; color: #fff; border-radius: 10px; padding: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; display: block;">
+                  style="background: #25D366; color: #fff; border-radius: 10px; padding: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; display: block; text-decoration: none;">
                   Consultar por WhatsApp
                 </a>
               `
