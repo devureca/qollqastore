@@ -63,8 +63,8 @@ export async function getProducts(): Promise<Product[]> {
 export async function getConfig(): Promise<Config> {
     const rows = await fetchSheet('config')
     const defaults: Config = {
-        nombre: 'Mi Tienda',
-        descripcion: 'Bienvenido a mi tienda',
+        nombre: 'Qollqastore',
+        descripcion: 'Tu tienda Online Gratis',
         color_primario: '#6366f1',
         whatsapp: '',
         instagram: '',
@@ -73,9 +73,10 @@ export async function getConfig(): Promise<Config> {
         moneda: '$',
     }
     if (rows.length < 2) return defaults
-    // config tiene formato campo|valor en lugar de cabeceras
     const config: Config = { ...defaults }
-    for (const row of rows.slice(1)) {
+    for (const row of rows) {
+        // saltamos la fila de cabeceras
+        if (row[0]?.toLowerCase().trim() === 'campo') continue
         if (row[0] && row[1]) {
             config[row[0].toLowerCase().trim()] = row[1].trim()
         }
