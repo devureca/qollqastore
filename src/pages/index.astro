@@ -2,19 +2,22 @@
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
-import {
-	getProducts,
-	getConfig,
-	getSlides,
-	getReviews,
-	getCategories,
-} from "../lib/sheet";
+import ProductCard from "../components/ProductCard.astro";
+import { getProducts, getConfig, getSlides, getReviews } from "../lib/sheet";
 
 const config = await getConfig();
 const products = await getProducts();
 const slides = await getSlides();
 const reviews = await getReviews();
-const categories = getCategories(products);
+
+const novedades = products
+	.filter((p) => p.novedad?.toLowerCase() === "si")
+	.slice(0, 4);
+const ofertas = products.filter((p) => p.precio_oferta).slice(0, 4);
+const catalogo = products
+	.filter((p) => p.disponible?.toLowerCase() !== "no")
+	.sort(() => Math.random() - 0.5)
+	.slice(0, 8);
 ---
 
 <Layout title={config.nombre} color={config.color_primario}>
@@ -23,297 +26,81 @@ const categories = getCategories(products);
 	<Hero slides={slides} />
 
 	<!-- Novedades -->
-	<div id="novedades" class="max-w-7xl mx-auto px-[5%] py-16">
-		<h2
-			class="section-title"
-			style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
-		>
-			NOVEDADES
-		</h2>
-		<p class="text-sm mb-8" style="color: var(--text-muted);">
-			Lo recién llegado
-		</p>
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-			{
-				products
-					.filter((p) => p.novedad?.toLowerCase() === "si")
-					.slice(0, 4)
-					.map((product) => (
-						<div
-							class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
-							data-product={JSON.stringify(product)}
-							style="background: var(--bg-card);"
-						>
-							<div
-								class="aspect-3/4 overflow-hidden"
-								style="background: var(--bg-secondary);"
-							>
-								{product.imagen ? (
-									<img
-										src={product.imagen}
-										alt={product.nombre}
-										class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-									/>
-								) : (
-									<div class="w-full h-full flex items-center justify-center text-5xl">
-										📦
-									</div>
-								)}
-							</div>
-							<div class="p-4">
-								{product.categoria && (
-									<p
-										class="text-xs font-bold uppercase tracking-widest mb-1"
-										style="color: var(--color-primary);"
-									>
-										{product.categoria}
-									</p>
-								)}
-								<p
-									class="font-bold text-sm mb-1 truncate"
-									style="color: var(--text);"
-								>
-									{product.nombre}
-								</p>
-								<div class="flex items-center gap-2">
-									{product.precio_oferta ? (
-										<>
-											<span
-												class="text-xs line-through"
-												style="color: var(--text-muted);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio,
-												).toLocaleString()}
-											</span>
-											<span
-												class="font-bold text-base"
-												style="color: var(--color-primary);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio_oferta,
-												).toLocaleString()}
-											</span>
-										</>
-									) : (
-										<span
-											class="font-bold text-base"
-											style="color: var(--color-primary);"
-										>
-											{config.moneda}
-											{Number(
-												product.precio,
-											).toLocaleString()}
-										</span>
-									)}
-								</div>
-							</div>
-						</div>
-					))
-			}
-		</div>
-	</div>
+	{
+		novedades.length > 0 && (
+			<div id="novedades" class="max-w-7xl mx-auto px-[5%] py-16">
+				<h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">
+					NOVEDADES
+				</h2>
+				<p class="text-sm mb-8 mt-1" style="color: var(--text-muted);">
+					Lo recién llegado
+				</p>
+				<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+					{novedades.map((product) => (
+						<ProductCard product={product} config={config} />
+					))}
+				</div>
+			</div>
+		)
+	}
 
 	<!-- Ofertas -->
 	{
-		products.some((p) => p.precio_oferta) && (
+		ofertas.length > 0 && (
 			<div
 				id="ofertas"
 				class="py-16"
 				style="background: var(--bg-secondary);"
 			>
 				<div class="max-w-7xl mx-auto px-[5%]">
-					<h2
-						class="section-title"
-						style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
-					>
+					<h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">
 						OFERTAS
 					</h2>
-					<p class="text-sm mb-8" style="color: var(--text-muted);">
+					<p
+						class="text-sm mb-8 mt-1"
+						style="color: var(--text-muted);"
+					>
 						No te lo pierdas
 					</p>
-					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-						{products
-							.filter((p) => p.precio_oferta)
-							.slice(0, 4)
-							.map((product) => (
-								<div
-									class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
-									data-product={JSON.stringify(product)}
-									style="background: var(--bg);"
-								>
-									<div
-										class="aspect-3/4 overflow-hidden relative"
-										style="background: var(--bg-card);"
-									>
-										{product.imagen ? (
-											<img
-												src={product.imagen}
-												alt={product.nombre}
-												class="w-full h-full object-cover"
-											/>
-										) : (
-											<div class="w-full h-full flex items-center justify-center text-5xl">
-												📦
-											</div>
-										)}
-										<span
-											class="absolute top-3 left-3 text-xs font-bold px-2 py-1 rounded-full text-white"
-											style="background: var(--color-primary);"
-										>
-											OFERTA
-										</span>
-									</div>
-									<div class="p-4">
-										{product.categoria && (
-											<p
-												class="text-xs font-bold uppercase tracking-widest mb-1"
-												style="color: var(--color-primary);"
-											>
-												{product.categoria}
-											</p>
-										)}
-										<p
-											class="font-bold text-sm mb-1 truncate"
-											style="color: var(--text);"
-										>
-											{product.nombre}
-										</p>
-										<div class="flex items-center gap-2">
-											<span
-												class="text-xs line-through"
-												style="color: var(--text-muted);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio,
-												).toLocaleString()}
-											</span>
-											<span
-												class="font-bold text-base"
-												style="color: var(--color-primary);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio_oferta,
-												).toLocaleString()}
-											</span>
-										</div>
-									</div>
-								</div>
-							))}
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+						{ofertas.map((product) => (
+							<ProductCard product={product} config={config} />
+						))}
 					</div>
 				</div>
 			</div>
 		)
 	}
 
-	<!-- Catálogo (random) -->
+	<!-- Catálogo random -->
 	<div class="max-w-7xl mx-auto px-[5%] py-16">
 		<h2
-			class="section-title"
 			style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
 		>
 			CATÁLOGO
 		</h2>
-		<p class="text-sm mb-8" style="color: var(--text-muted);">
+		<p class="text-sm mb-8 mt-1" style="color: var(--text-muted);">
 			Explorá todo el stock
 		</p>
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
 			{
-				products
-					.filter((p) => p.disponible?.toLowerCase() !== "no")
-					.sort(() => Math.random() - 0.5)
-					.slice(0, 8)
-					.map((product) => (
-						<div
-							class="product-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1"
-							data-product={JSON.stringify(product)}
-							style="background: var(--bg-card);"
-						>
-							<div
-								class="aspect-3/4 overflow-hidden"
-								style="background: var(--bg-secondary);"
-							>
-								{product.imagen ? (
-									<img
-										src={product.imagen}
-										alt={product.nombre}
-										class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-									/>
-								) : (
-									<div class="w-full h-full flex items-center justify-center text-5xl">
-										📦
-									</div>
-								)}
-							</div>
-							<div class="p-4">
-								{product.categoria && (
-									<p
-										class="text-xs font-bold uppercase tracking-widest mb-1"
-										style="color: var(--color-primary);"
-									>
-										{product.categoria}
-									</p>
-								)}
-								<p
-									class="font-bold text-sm mb-1 truncate"
-									style="color: var(--text);"
-								>
-									{product.nombre}
-								</p>
-								<div class="flex items-center gap-2">
-									{product.precio_oferta ? (
-										<>
-											<span
-												class="text-xs line-through"
-												style="color: var(--text-muted);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio,
-												).toLocaleString()}
-											</span>
-											<span
-												class="font-bold text-base"
-												style="color: var(--color-primary);"
-											>
-												{config.moneda}
-												{Number(
-													product.precio_oferta,
-												).toLocaleString()}
-											</span>
-										</>
-									) : (
-										<span
-											class="font-bold text-base"
-											style="color: var(--color-primary);"
-										>
-											{config.moneda}
-											{Number(
-												product.precio,
-											).toLocaleString()}
-										</span>
-									)}
-								</div>
-							</div>
-						</div>
-					))
+				catalogo.map((product) => (
+					<ProductCard product={product} config={config} />
+				))
 			}
 
 			<!-- Card ver catálogo completo -->
 			<a
 				href="/catalogo"
-				class="rounded-2xl overflow-hidden flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-all duration-200 hover:border-solid min-h-[300px]"
+				class="rounded-2xl flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-all duration-200 min-h-[300px]"
 				style="border-color: var(--border);"
-				onmouseenter="this.style.borderColor='var(--color-primary)'"
-				onmouseleave="this.style.borderColor='var(--border)'"
+				onmouseenter="this.style.borderColor='var(--color-primary)'; this.querySelector('p').style.color='var(--color-primary)'"
+				onmouseleave="this.style.borderColor='var(--border)'; this.querySelector('p').style.color='var(--text-muted)'"
 			>
-				<span class="text-4xl">→</span>
+				<span class="text-4xl" style="color: var(--text-muted);">→</span
+				>
 				<p
-					class="font-bold text-sm text-center px-4"
+					class="font-bold text-sm text-center px-4 transition-colors duration-200"
 					style="color: var(--text-muted);"
 				>
 					Ver catálogo completo
@@ -327,24 +114,24 @@ const categories = getCategories(products);
 		reviews.length > 0 && (
 			<div class="py-16" style="background: var(--bg-secondary);">
 				<div class="max-w-7xl mx-auto px-[5%]">
-					<h2
-						class="section-title"
-						style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);"
-					>
+					<h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">
 						CLIENTES FELICES
 					</h2>
-					<p class="text-sm mb-8" style="color: var(--text-muted);">
+					<p
+						class="text-sm mb-8 mt-1"
+						style="color: var(--text-muted);"
+					>
 						Lo que dicen de nosotros
 					</p>
 					<div class="flex flex-col">
 						{reviews.map((review, i) => (
 							<div
 								class={`py-6 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-center ${i < reviews.length - 1 ? "border-b" : ""}`}
-								style={`border-color: var(--border);`}
+								style="border-color: var(--border);"
 							>
 								<div class="flex items-center gap-3">
 									<div
-										class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-white font-bold"
+										class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 text-white"
 										style="background: var(--color-primary); font-family: var(--font-display); font-size: 1.2rem;"
 									>
 										{review.nombre.charAt(0).toUpperCase()}
@@ -384,9 +171,9 @@ const categories = getCategories(products);
 	<footer class="py-8 text-center" style="background: #0d0d0d;">
 		<p class="text-xs" style="color: rgba(255,255,255,0.3);">
 			© {new Date().getFullYear()}
-			{config.nombre} · Powered by <span
-				class="font-bold"
-				style="color: var(--color-primary);">QollqaStore</span
+			{config.nombre} · Powered by
+			<span class="font-bold" style="color: var(--color-primary);"
+				>QollqaStore</span
 			>
 		</p>
 	</footer>
@@ -422,26 +209,14 @@ const categories = getCategories(products);
 		)
 	}
 
-	<script>
+	<script define:vars={{ moneda: config.moneda }}>
 		const PRIMARY = getComputedStyle(document.documentElement)
 			.getPropertyValue("--color-primary")
 			.trim();
 
-		// Slider autoplay
-		const slides = document.querySelectorAll(".slide");
-		let current = 0;
-		if (slides.length > 1) {
-			setInterval(() => {
-				(slides[current] as HTMLElement).style.opacity = "0";
-				current = (current + 1) % slides.length;
-				(slides[current] as HTMLElement).style.opacity = "1";
-			}, 5000);
-		}
-
-		// Modal producto
-		const modal = document.getElementById("modal")!;
-		const modalContent = document.getElementById("modal-content")!;
-		const fixed = [
+		const modal = document.getElementById("modal");
+		const modalContent = document.getElementById("modal-content");
+		const FIXED = [
 			"id",
 			"nombre",
 			"descripcion",
@@ -459,37 +234,33 @@ const categories = getCategories(products);
 					card.getAttribute("data-product") || "{}",
 				);
 				const extras = Object.entries(data).filter(
-					([k, v]) => !fixed.includes(k) && v,
+					([k, v]) => !FIXED.includes(k) && v,
 				);
-				const moneda =
-					document
-						.querySelector('meta[name="moneda"]')
-						?.getAttribute("content") || "$";
 
 				modalContent.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 420px;">
-            <div style="background: var(--bg-card); border-radius: 16px 0 0 16px; overflow: hidden;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;min-height:420px;">
+            <div style="background:var(--bg-card);border-radius:16px 0 0 16px;overflow:hidden;">
               ${
 					data.imagen
-						? `<img src="${data.imagen}" alt="${data.nombre}" style="width: 100%; height: 100%; object-fit: cover;" />`
+						? `<img src="${data.imagen}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
 						: `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;">📦</div>`
 				}
             </div>
-            <div style="padding: 1.75rem; display: flex; flex-direction: column; gap: 0.875rem; background: var(--bg);">
-              <button id="close-modal" style="align-self: flex-end; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">✕</button>
-              ${data.categoria ? `<p style="font-size: 0.7rem; font-weight: 700; color: ${PRIMARY}; letter-spacing: 0.1em; text-transform: uppercase;">${data.categoria}</p>` : ""}
-              <h2 style="font-family: var(--font-display); font-size: 1.75rem; letter-spacing: 0.05em; line-height: 1.1; color: var(--text);">${data.nombre}</h2>
-              ${data.descripcion ? `<p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">${data.descripcion}</p>` : ""}
+            <div style="padding:1.75rem;display:flex;flex-direction:column;gap:0.875rem;background:var(--bg);">
+              <button id="close-modal" style="align-self:flex-end;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">✕</button>
+              ${data.categoria ? `<p style="font-size:0.7rem;font-weight:700;color:${PRIMARY};letter-spacing:0.1em;text-transform:uppercase;">${data.categoria}</p>` : ""}
+              <h2 style="font-family:var(--font-display);font-size:1.75rem;letter-spacing:0.05em;line-height:1.1;color:var(--text);">${data.nombre}</h2>
+              ${data.descripcion ? `<p style="font-size:0.875rem;color:var(--text-muted);line-height:1.6;">${data.descripcion}</p>` : ""}
               ${
 					extras.length > 0
 						? `
-                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="display:flex;flex-direction:column;gap:0.35rem;">
                   ${extras
 						.map(
 							([k, v]) => `
-                    <div style="display: flex; gap: 0.5rem; font-size: 0.82rem;">
-                      <span style="color: var(--text-muted); text-transform: capitalize;">${k}:</span>
-                      <span style="font-weight: 600; color: var(--text);">${v}</span>
+                    <div style="display:flex;gap:0.5rem;font-size:0.82rem;">
+                      <span style="color:var(--text-muted);text-transform:capitalize;">${k}:</span>
+                      <span style="font-weight:600;color:var(--text);">${v}</span>
                     </div>
                   `,
 						)
@@ -498,24 +269,14 @@ const categories = getCategories(products);
               `
 						: ""
 				}
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.75rem;">
                 ${
 					data.precio_oferta
-						? `<span style="font-size: 0.9rem; text-decoration: line-through; color: var(--text-muted);">${moneda}${Number(data.precio).toLocaleString()}</span>
-                     <span style="font-size: 1.5rem; font-weight: 700; color: ${PRIMARY};">${moneda}${Number(data.precio_oferta).toLocaleString()}</span>`
-						: `<span style="font-size: 1.5rem; font-weight: 700; color: ${PRIMARY};">${moneda}${Number(data.precio).toLocaleString()}</span>`
+						? `<span style="font-size:0.9rem;text-decoration:line-through;color:var(--text-muted);">${moneda}${Number(data.precio).toLocaleString()}</span>
+                     <span style="font-size:1.5rem;font-weight:700;color:${PRIMARY};">${moneda}${Number(data.precio_oferta).toLocaleString()}</span>`
+						: `<span style="font-size:1.5rem;font-weight:700;color:${PRIMARY};">${moneda}${Number(data.precio).toLocaleString()}</span>`
 				}
               </div>
-              ${
-					data.whatsapp
-						? `
-                <a href="https://wa.me/${data.whatsapp}?text=Hola! Me interesa ${encodeURIComponent(data.nombre)}" target="_blank"
-                  style="background: #25D366; color: #fff; border-radius: 10px; padding: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; display: block; text-decoration: none;">
-                  Consultar por WhatsApp
-                </a>
-              `
-						: ""
-				}
             </div>
           </div>
         `;
