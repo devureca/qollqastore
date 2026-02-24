@@ -1,0 +1,233 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import ProductCard from "../components/ProductCard.astro";
+import ProductModal from "../components/ProductModal.astro";
+import Footer from "../components/Footer.astro";
+import WhatsAppButton from "../components/WhatsAppButton.astro";
+import { getProducts, getConfig, getCategories } from "../lib/sheet";
+
+const config = await getConfig();
+const products = await getProducts();
+const categories = getCategories(products);
+const disponibles = products.filter(
+    (p) => p.disponible?.toLowerCase() !== "no",
+);
+---
+
+<Layout title={`Catálogo — ${config.nombre}`} color={config.color_primario}>
+    <Navbar config={config} />
+
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto px-[5%] pt-16 pb-8">
+        <h1
+            style="font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 4.5rem); letter-spacing: 0.05em; color: var(--text);"
+        >
+            CATÁLOGO
+        </h1>
+        <p class="text-sm mt-2" style="color: var(--text-muted);">
+            {disponibles.length} productos disponibles
+        </p>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div
+        class="sticky top-16 z-30 border-b"
+        style="background: var(--bg); border-color: var(--border);"
+    >
+        <div
+            class="max-w-7xl mx-auto px-[5%] py-4 flex flex-col md:flex-row gap-4 md:items-center md:justify-between"
+        >
+            <!-- Categorías con scroll horizontal -->
+            <div
+                class="flex gap-2 overflow-x-auto pb-1 md:pb-0"
+                style="scrollbar-width: none;"
+            >
+                {
+                    categories.map((cat) => (
+                        <button
+                            class="cat-btn shrink-0 text-sm font-bold px-5 py-2.5 rounded-full border transition-all duration-200"
+                            data-cat={cat}
+                            style={`border-color: var(--border); background: ${cat === "Todos" ? "var(--color-primary)" : "transparent"}; color: ${cat === "Todos" ? "#fff" : "var(--text-muted)"}; cursor: pointer;`}
+                        >
+                            {cat}
+                        </button>
+                    ))
+                }
+            </div>
+
+            <!-- Búsqueda -->
+            <input
+                id="search"
+                type="text"
+                placeholder="Buscar productos..."
+                class="w-full md:w-72 px-5 py-2.5 rounded-full text-sm outline-none border transition-all duration-200"
+                style="background: var(--bg-card); border-color: var(--border); color: var(--text);"
+            />
+        </div>
+    </div>
+
+    <!-- Grid de productos -->
+    <div class="max-w-7xl mx-auto px-[5%] py-10">
+        <!-- Contador de resultados -->
+        <p id="count" class="text-sm mb-6" style="color: var(--text-muted);">
+            Mostrando {disponibles.length} productos
+        </p>
+
+        <div
+            id="grid"
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        >
+            {
+                disponibles.map((product) => (
+                    <ProductCard product={product} config={config} />
+                ))
+            }
+        </div>
+
+        <!-- Sin resultados -->
+        <div id="empty" class="hidden py-24 text-center">
+            <p class="text-4xl mb-4">🔍</p>
+            <p class="font-bold text-lg mb-2" style="color: var(--text);">
+                Sin resultados
+            </p>
+            <p class="text-sm" style="color: var(--text-muted);">
+                Probá con otra categoría o término de búsqueda
+            </p>
+        </div>
+
+        <!-- Sentinel para scroll infinito -->
+        <div id="sentinel" class="h-10 mt-6"></div>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="hidden py-8 text-center">
+            <div
+                class="inline-block w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                style="border-color: var(--color-primary); border-top-color: transparent;"
+            >
+            </div>
+        </div>
+    </div>
+
+    <Footer config={config} />
+    <ProductModal />
+    <WhatsAppButton whatsapp={config.whatsapp} />
+
+    <script define:vars={{ moneda: config.moneda }}>
+        const PRIMARY = getComputedStyle(document.documentElement)
+            .getPropertyValue("--color-primary")
+            .trim();
+
+        const allCards = Array.from(document.querySelectorAll(".product-card"));
+        const catBtns = document.querySelectorAll(".cat-btn");
+        const searchInput = document.getElementById("search");
+        const countEl = document.getElementById("count");
+        const emptyEl = document.getElementById("empty");
+        const gridEl = document.getElementById("grid");
+        const sentinel = document.getElementById("sentinel");
+        const loadingEl = document.getElementById("loading");
+
+        const PAGE_SIZE = 20;
+        let activeCat = "Todos";
+        let searchTerm = "";
+        let visibleCount = PAGE_SIZE;
+
+        // Ocultar todos los cards al inicio
+        allCards.forEach((card) => (card.style.display = "none"));
+
+        function getFiltered() {
+            return allCards.filter((card) => {
+                const cat = card.getAttribute("data-cat") || "";
+                const data = JSON.parse(
+                    card.getAttribute("data-product") || "{}",
+                );
+                const matchCat = activeCat === "Todos" || cat === activeCat;
+                const matchSearch =
+                    searchTerm === "" ||
+                    data.nombre?.toLowerCase().includes(searchTerm) ||
+                    data.descripcion?.toLowerCase().includes(searchTerm) ||
+                    cat.toLowerCase().includes(searchTerm);
+                return matchCat && matchSearch;
+            });
+        }
+
+        function render() {
+            const filtered = getFiltered();
+
+            // Ocultar todos
+            allCards.forEach((card) => (card.style.display = "none"));
+
+            // Mostrar solo los visibles
+            filtered
+                .slice(0, visibleCount)
+                .forEach((card) => (card.style.display = "block"));
+
+            const total = filtered.length;
+            const showing = Math.min(visibleCount, total);
+
+            countEl.textContent = `Mostrando ${showing} de ${total} producto${total !== 1 ? "s" : ""}`;
+            emptyEl.classList.toggle("hidden", total > 0);
+            gridEl.classList.toggle("hidden", total === 0);
+
+            // Mostrar/ocultar sentinel
+            sentinel.style.display = visibleCount < total ? "block" : "none";
+        }
+
+        // Scroll infinito con IntersectionObserver
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    const filtered = getFiltered();
+                    if (visibleCount < filtered.length) {
+                        loadingEl.classList.remove("hidden");
+                        setTimeout(() => {
+                            visibleCount += PAGE_SIZE;
+                            render();
+                            loadingEl.classList.add("hidden");
+                        }, 400);
+                    }
+                }
+            },
+            { threshold: 0.1 },
+        );
+
+        observer.observe(sentinel);
+
+        // Filtro por categoría
+        catBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                activeCat = btn.getAttribute("data-cat") || "Todos";
+                visibleCount = PAGE_SIZE;
+                catBtns.forEach((b) => {
+                    b.style.background = "transparent";
+                    b.style.color = "var(--text-muted)";
+                    b.style.borderColor = "var(--border)";
+                });
+                btn.style.background = PRIMARY;
+                btn.style.color = "#fff";
+                btn.style.borderColor = PRIMARY;
+                render();
+            });
+        });
+
+        // Búsqueda
+        searchInput.addEventListener("input", (e) => {
+            searchTerm = e.target.value.toLowerCase().trim();
+            visibleCount = PAGE_SIZE;
+            render();
+        });
+
+        // Modal
+        allCards.forEach((card) => {
+            card.addEventListener("click", () => {
+                const data = JSON.parse(
+                    card.getAttribute("data-product") || "{}",
+                );
+                window.__openModal(data, moneda, PRIMARY);
+            });
+        });
+
+        // Render inicial
+        render();
+    </script>
+</Layout>
