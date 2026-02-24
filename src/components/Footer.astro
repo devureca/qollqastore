@@ -1,0 +1,166 @@
+---
+import type { Config } from "../types";
+import {
+    IconInstagram,
+    IconFacebook,
+    IconTiktok,
+    IconWhatsapp,
+} from "../lib/icons";
+
+interface Props {
+    config: Config;
+}
+
+const { config } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer style="background: #0d0d0d;">
+    <div class="max-w-7xl mx-auto px-[5%] py-12 md:py-16">
+        <div class="mb-10">
+            <!-- Mobile: nombre arriba, 2 cols abajo | Desktop: 3 cols en fila -->
+            <div class="flex flex-col md:grid md:grid-cols-3 gap-8">
+                <!-- Nombre y descripción -->
+                <div class="mb-2 md:mb-0">
+                    <p
+                        style="font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 0.1em; color: var(--color-primary);"
+                    >
+                        {config.nombre}
+                    </p>
+                    {
+                        config.descripcion && (
+                            <p
+                                class="mt-2 text-sm leading-relaxed"
+                                style="color: rgba(255,255,255,0.35);"
+                            >
+                                {config.descripcion}
+                            </p>
+                        )
+                    }
+                </div>
+
+                <!-- Contacto y Navegación: 2 cols en mobile, separados en desktop -->
+                <div class="grid grid-cols-2 md:contents gap-8">
+                    <!-- Contacto -->
+                    <div>
+                        <p
+                            class="text-xs font-bold uppercase tracking-widest mb-4"
+                            style="color: rgba(255,255,255,0.25);"
+                        >
+                            Contacto
+                        </p>
+                        <div class="flex flex-col gap-3">
+                            {
+                                config.whatsapp && (
+                                    <a
+                                        href={`https://wa.me/${config.whatsapp}`}
+                                        target="_blank"
+                                        class="flex items-center gap-2 text-sm transition-colors duration-200"
+                                        style="color: rgba(255,255,255,0.45);"
+                                        onmouseenter="this.style.color='#25D366'"
+                                        onmouseleave="this.style.color='rgba(255,255,255,0.45)'"
+                                    >
+                                        <span set:html={IconWhatsapp} />
+                                        WhatsApp
+                                    </a>
+                                )
+                            }
+                            {
+                                config.instagram && (
+                                    <a
+                                        href={config.instagram}
+                                        target="_blank"
+                                        class="flex items-center gap-2 text-sm transition-colors duration-200"
+                                        style="color: rgba(255,255,255,0.45);"
+                                        onmouseenter="this.style.color='#fff'"
+                                        onmouseleave="this.style.color='rgba(255,255,255,0.45)'"
+                                    >
+                                        <span set:html={IconInstagram} />
+                                        Instagram
+                                    </a>
+                                )
+                            }
+                            {
+                                config.facebook && (
+                                    <a
+                                        href={config.facebook}
+                                        target="_blank"
+                                        class="flex items-center gap-2 text-sm transition-colors duration-200"
+                                        style="color: rgba(255,255,255,0.45);"
+                                        onmouseenter="this.style.color='#fff'"
+                                        onmouseleave="this.style.color='rgba(255,255,255,0.45)'"
+                                    >
+                                        <span set:html={IconFacebook} />
+                                        Facebook
+                                    </a>
+                                )
+                            }
+                            {
+                                config.tiktok && (
+                                    <a
+                                        href={`https://tiktok.com/@${config.tiktok}`}
+                                        target="_blank"
+                                        class="flex items-center gap-2 text-sm transition-colors duration-200"
+                                        style="color: rgba(255,255,255,0.45);"
+                                        onmouseenter="this.style.color='#fff'"
+                                        onmouseleave="this.style.color='rgba(255,255,255,0.45)'"
+                                    >
+                                        <span set:html={IconTiktok} />
+                                        TikTok
+                                    </a>
+                                )
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Navegación -->
+                    <div>
+                        <p
+                            class="text-xs font-bold uppercase tracking-widest mb-4"
+                            style="color: rgba(255,255,255,0.25);"
+                        >
+                            Navegación
+                        </p>
+                        <div class="flex flex-col gap-3">
+                            {
+                                [
+                                    { href: "/", label: "Inicio" },
+                                    { href: "/#novedades", label: "Novedades" },
+                                    { href: "/#ofertas", label: "Ofertas" },
+                                    { href: "/catalogo", label: "Catálogo" },
+                                ].map((link) => (
+                                    <a
+                                        href={link.href}
+                                        class="text-sm transition-colors duration-200"
+                                        style="color: rgba(255,255,255,0.45);"
+                                        onmouseenter="this.style.color='#fff'"
+                                        onmouseleave="this.style.color='rgba(255,255,255,0.45)'"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Línea divisora y copyright -->
+        <div
+            class="border-t pt-6"
+            style="border-color: rgba(255,255,255,0.06);"
+        >
+            <p
+                class="text-xs text-center"
+                style="color: rgba(255,255,255,0.2);"
+            >
+                © {year}
+                {config.nombre} · Powered by
+                <span class="font-bold" style="color: var(--color-primary);"
+                    >QollqaStore</span
+                >
+            </p>
+        </div>
+    </div>
+</footer>

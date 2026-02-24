@@ -1,0 +1,42 @@
+---
+import type { Review } from '../types'
+
+interface Props {
+  reviews: Review[]
+}
+
+const { reviews } = Astro.props
+---
+
+<div class="py-16" style="background: var(--bg-secondary);">
+  <div class="max-w-7xl mx-auto px-[5%]">
+    <h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">CLIENTES FELICES</h2>
+    <p class="text-sm mb-8 mt-1" style="color: var(--text-muted);">Lo que dicen de nosotros</p>
+
+    <div class="flex flex-col">
+      {reviews.map((review, i) => (
+        <div
+          class={`py-6 flex flex-col md:grid md:grid-cols-[200px_1fr] gap-4 md:gap-6 md:items-center ${i < reviews.length - 1 ? 'border-b' : ''}`}
+          style="border-color: var(--border);"
+        >
+          <!-- Avatar y nombre -->
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center shrink-0 text-white"
+              style="background: var(--color-primary); font-family: var(--font-display); font-size: 1.1rem;"
+            >
+              {review.nombre.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p class="font-bold text-sm" style="color: var(--text);">{review.nombre}</p>
+              <p class="text-xs md:text-sm" style="color: #f59e0b;">{'★'.repeat(Number(review.estrellas))}</p>
+            </div>
+          </div>
+
+          <!-- Texto -->
+          <p class="text-sm leading-relaxed" style="color: var(--text-muted);">"{review.texto}"</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
