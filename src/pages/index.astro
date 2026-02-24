@@ -16,7 +16,7 @@ const reviews = await getReviews();
 
 const novedades = products
 	.filter((p) => p.novedad?.toLowerCase() === "si")
-	.slice(0, 4);
+	.slice(0, 3);
 const ofertas = products.filter((p) => p.precio_oferta).slice(0, 4);
 const catalogo = products
 	.filter((p) => p.disponible?.toLowerCase() !== "no")
@@ -39,7 +39,7 @@ const catalogo = products
 				<p class="text-sm mb-8 mt-1" style="color: var(--text-muted);">
 					Lo recién llegado
 				</p>
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					{novedades.map((product) => (
 						<ProductCard product={product} config={config} />
 					))}
