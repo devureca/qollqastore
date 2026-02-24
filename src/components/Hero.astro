@@ -1,0 +1,110 @@
+---
+import type { Slide } from '../types'
+
+interface Props {
+  slides: Slide[]
+}
+
+const { slides } = Astro.props
+---
+
+{slides.length > 0 && (
+  <div class="px-4 md:px-6 pt-4 md:pt-6">
+    <div class="relative rounded-2xl md:rounded-3xl overflow-hidden" style="height: 85vh; background: #111;">
+
+      <!-- Slides -->
+      {slides.map((slide, i) => (
+        <div
+          class="slide absolute inset-0 bg-cover bg-center transition-opacity duration-700"
+          data-index={i}
+          style={`opacity: ${i === 0 ? 1 : 0}; background-image: url('${slide.imagen}');`}
+        >
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%);" />
+          <div class="absolute bottom-24 md:bottom-28 left-6 md:left-12 max-w-xl">
+            {slide.titulo && (
+              <h1 class="text-white tracking-wide leading-none" style="font-family: var(--font-display); font-size: clamp(2.5rem, 7vw, 5.5rem);">
+                {slide.titulo}
+              </h1>
+            )}
+            {slide.subtitulo && (
+              <p class="mt-3 text-sm md:text-base" style="color: rgba(255,255,255,0.65);">
+                {slide.subtitulo}
+              </p>
+            )}
+          </div>
+        </div>
+      ))}
+
+      <!-- Barra inferior de navegación -->
+      <div class="absolute bottom-0 left-0 right-0" style="border-top: 1px solid rgba(255,255,255,0.15);">
+        <div class="grid" style={`grid-template-columns: repeat(${slides.length}, 1fr);`}>
+          {slides.map((slide, i) => (
+            <button
+              class="slide-btn text-left px-4 md:px-8 py-4 md:py-5 transition-all duration-200 relative"
+              data-index={i}
+              style="background: none; border: none; border-right: 1px solid rgba(255,255,255,0.1); cursor: pointer;"
+            >
+              <!-- Línea activa -->
+              <div
+                class="slide-indicator absolute top-0 left-0 right-0 h-0.5 transition-all duration-500"
+                style={`background: white; opacity: ${i === 0 ? 1 : 0.2}; transform: scaleX(${i === 0 ? 1 : 0}); transform-origin: left;`}
+              />
+              <span class="block text-xs md:text-sm font-bold mb-1" style={`color: ${i === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)'};`}>
+                0{i + 1}
+              </span>
+              <!-- Solo visible en desktop -->
+              {slide.titulo && (
+                <span class="hidden md:block text-xs truncate" style="color: rgba(255,255,255,0.45);">
+                  {slide.titulo}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
+
+<script>
+  const slides = document.querySelectorAll('.slide')
+  const btns = document.querySelectorAll('.slide-btn')
+  const indicators = document.querySelectorAll('.slide-indicator')
+  let current = 0
+  let timer: ReturnType<typeof setInterval>
+
+  function goTo(index: number) {
+    // Ocultar actual
+    ;(slides[current] as HTMLElement).style.opacity = '0'
+    ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.opacity = '0.2'
+    ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.transform = 'scaleX(0)'
+    ;(btns[current].querySelectorAll('span')[0] as HTMLElement).style.color = 'rgba(255,255,255,0.35)'
+
+    current = index
+
+    // Mostrar nuevo
+    ;(slides[current] as HTMLElement).style.opacity = '1'
+    ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.opacity = '1'
+    ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.transform = 'scaleX(1)'
+    ;(btns[current].querySelectorAll('span')[0] as HTMLElement).style.color = 'rgba(255,255,255,0.9)'
+  }
+
+  function startTimer() {
+    clearInterval(timer)
+    if (slides.length > 1) {
+      timer = setInterval(() => {
+        goTo((current + 1) % slides.length)
+      }, 5000)
+    }
+  }
+
+  btns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      goTo(i)
+      startTimer()
+    })
+  })
+
+  startTimer()
+</script>

@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
 import {
 	getProducts,
 	getConfig,
@@ -19,49 +20,7 @@ const categories = getCategories(products);
 <Layout title={config.nombre} color={config.color_primario}>
 	<Navbar config={config} />
 
-	<!-- Hero -->
-	{
-		slides.length > 0 && (
-			<div class="px-6 pt-6">
-				<div
-					id="hero"
-					class="relative rounded-3xl overflow-hidden"
-					style="height: 80vh; background: #111;"
-				>
-					{slides.map((slide, i) => (
-						<div
-							class="slide absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-							data-index={i}
-							style={`opacity: ${i === 0 ? 1 : 0}; background-image: url('${slide.imagen}');`}
-						>
-							<div
-								class="absolute inset-0"
-								style="background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);"
-							/>
-							<div class="absolute bottom-12 left-12">
-								{slide.titulo && (
-									<h1
-										class="text-white tracking-wider"
-										style="font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1;"
-									>
-										{slide.titulo}
-									</h1>
-								)}
-								{slide.subtitulo && (
-									<p
-										class="mt-2 text-base"
-										style="color: rgba(255,255,255,0.7);"
-									>
-										{slide.subtitulo}
-									</p>
-								)}
-							</div>
-						</div>
-					))}
-				</div>
-			</div>
-		)
-	}
+	<Hero slides={slides} />
 
 	<!-- Novedades -->
 	<div id="novedades" class="max-w-7xl mx-auto px-[5%] py-16">
