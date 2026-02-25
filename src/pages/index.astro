@@ -68,13 +68,19 @@ const catalogo = products
 				))
 			}
 
-			<!-- Card ver catálogo completo -->
+			<!-- Card ver catálogo — solo desktop -->
+
 			<a
 				href="/catalogo"
-				class="rounded-2xl flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-all duration-200 min-h-[300px]"
-				style="border-color: var(--border);"
-				onmouseenter="this.style.borderColor='var(--color-primary)'; this.querySelector('p').style.color='var(--color-primary)'"
-				onmouseleave="this.style.borderColor='var(--border)'; this.querySelector('p').style.color='var(--text-muted)'"
+				class="hidden md:flex rounded-2xl flex-col
+			items-center justify-center gap-3 border-2 border-dashed
+			transition-all duration-200 min-h-[300px]"
+				style="border-color:
+			var(--border);"
+				onmouseenter="this.style.borderColor='var(--color-primary)';
+			this.querySelector('p').style.color='var(--color-primary)'"
+				onmouseleave="this.style.borderColor='var(--border)';
+			this.querySelector('p').style.color='var(--text-muted)'"
 			>
 				<span class="text-4xl" style="color: var(--text-muted);">→</span
 				>
@@ -84,6 +90,22 @@ const catalogo = products
 				>
 					Ver catálogo completo
 				</p>
+			</a>
+		</div>
+
+		<!-- Botón ver más — solo mobile -->
+		<div class="flex justify-center mt-8 md:hidden">
+			<a
+				href="/catalogo"
+				class="flex items-center gap-2 px-8 py-3 rounded-full
+		font-bold text-sm transition-all duration-200 border"
+				style="border-color: var(--text); color: var(--text);"
+				onmouseenter="this.style.background='var(--text)';
+		this.style.color='var(--bg)'"
+				onmouseleave="this.style.background='transparent';
+		this.style.color='var(--text)'"
+			>
+				Ver catálogo completo →
 			</a>
 		</div>
 	</div>
