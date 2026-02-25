@@ -28,6 +28,7 @@
 
 html {
     visibility: hidden;
+    scroll-behavior: smooth;
 }
 
 html.ready {

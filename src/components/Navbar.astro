@@ -26,7 +26,7 @@ const { config } = Astro.props;
         <a
             href="/"
             class="text-3xl tracking-widest font-bold"
-            style="font-family: var(--font-display); color: var(--color-primary);"
+            style="font-family: var(--font-display); color: var(--text);"
         >
             {config.nombre}
         </a>
@@ -52,6 +52,11 @@ const { config } = Astro.props;
                 href="/catalogo"
                 class="nav-link text-sm font-semibold transition-colors duration-200"
                 style="color: var(--text-muted);">Catálogo</a
+            >
+            <a
+                href="/#contacto"
+                class="nav-link text-sm font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Contacto</a
             >
         </nav>
 
@@ -155,6 +160,11 @@ const { config } = Astro.props;
                 href="/catalogo"
                 class="nav-link text-lg font-semibold transition-colors duration-200"
                 style="color: var(--text-muted);">Catálogo</a
+            >
+            <a
+                href="/#contacto"
+                class="nav-link text-lg font-semibold transition-colors duration-200"
+                style="color: var(--text-muted);">Contacto</a
             >
         </nav>
 

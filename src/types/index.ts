@@ -32,3 +32,17 @@ export interface Review {
     texto: string
     estrellas: string
 }
+
+export interface Info {
+    direccion?: string
+    ciudad?: string
+    horario?: string
+    telefono?: string
+    correo?: string
+    envios?: string
+    yape?: string
+    plin?: string
+    tarjeta?: string
+    efectivo?: string
+    [key: string]: string | undefined
+}

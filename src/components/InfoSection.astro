@@ -1,0 +1,121 @@
+---
+import type { Info } from '../types'
+import { IconEfectivo, IconTarjeta, IconYape, IconPlin } from '../lib/icons'
+
+interface Props {
+  info: Info
+}
+
+const { info } = Astro.props
+
+const pagos = [
+  { key: 'efectivo', label: 'Efectivo', icon: IconEfectivo },
+  { key: 'yape', label: 'Yape', icon: IconYape },
+  { key: 'plin', label: 'Plin', icon: IconYape },
+  { key: 'tarjeta', label: 'Tarjeta', icon: IconTarjeta },
+]
+
+const pagosActivos = pagos.filter(p => info[p.key]?.toLowerCase() === 'si')
+const hasContact = info.direccion || info.ciudad || info.horario || info.telefono || info.correo
+const hasPayment = pagosActivos.length > 0 || info.envios
+---
+
+{(hasContact || hasPayment) && (
+  <div id="contacto" class="py-16" style="background: var(--bg);">
+    <div class="max-w-7xl mx-auto px-[5%]">
+      <h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">CONTACTO</h2>
+      <p class="text-sm mt-1 mb-10" style="color: var(--text-muted);">Todo lo que necesitás saber</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+
+        <!-- Columna izquierda: contacto -->
+        {hasContact && (
+          <div class="flex flex-col gap-4">
+            <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: var(--text-muted);">Contacto y ubicación</p>
+
+            {info.direccion && (
+              <div class="flex gap-3 items-start">
+                <span class="text-lg">📍</span>
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--text-muted);">Dirección</p>
+                  <p class="text-sm font-medium" style="color: var(--text);">{info.direccion}{info.ciudad ? `, ${info.ciudad}` : ''}</p>
+                </div>
+              </div>
+            )}
+
+            {info.horario && (
+              <div class="flex gap-3 items-start">
+                <span class="text-lg">🕐</span>
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--text-muted);">Horario</p>
+                  <p class="text-sm font-medium" style="color: var(--text);">{info.horario}</p>
+                </div>
+              </div>
+            )}
+
+            {info.telefono && (
+              <div class="flex gap-3 items-start">
+                <span class="text-lg">📞</span>
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--text-muted);">Teléfono</p>
+                  <a href={`tel:${info.telefono}`} class="text-sm font-medium transition-colors duration-200" style="color: var(--text);"
+                    onmouseenter="this.style.color='var(--color-primary)'"
+                    onmouseleave="this.style.color='var(--text)'"
+                  >{info.telefono}</a>
+                </div>
+              </div>
+            )}
+
+            {info.correo && (
+              <div class="flex gap-3 items-start">
+                <span class="text-lg">✉️</span>
+                <div>
+                  <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--text-muted);">Correo</p>
+                  <a href={`mailto:${info.correo}`} class="text-sm font-medium transition-colors duration-200" style="color: var(--text);"
+                    onmouseenter="this.style.color='var(--color-primary)'"
+                    onmouseleave="this.style.color='var(--text)'"
+                  >{info.correo}</a>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <!-- Columna derecha: pagos y envíos -->
+        {hasPayment && (
+          <div class="flex flex-col gap-6">
+
+            {info.envios && (
+              <div>
+                <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--text-muted);">Envíos</p>
+                <div class="flex gap-3 items-start">
+                  <span class="text-lg">🚚</span>
+                  <p class="text-sm font-medium" style="color: var(--text);">{info.envios}</p>
+                </div>
+              </div>
+            )}
+
+            {pagosActivos.length > 0 && (
+              <div>
+                <p class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--text-muted);">Métodos de pago</p>
+                <div class="flex flex-wrap gap-3">
+                    {pagosActivos.map(pago => (
+  <div
+    class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border"
+    style="border-color: var(--border); color: var(--text); background: var(--bg-card);"
+  >
+    <span set:html={pago.icon} />
+    <span>{pago.label}</span>
+  </div>
+))}
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+      </div>
+    </div>
+  </div>
+)}

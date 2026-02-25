@@ -6,14 +6,22 @@ import ProductCard from "../components/ProductCard.astro";
 import ProductModal from "../components/ProductModal.astro";
 import OfertasSlider from "../components/OfertasSlider.astro";
 import Reviews from "../components/Reviews.astro";
+import InfoSection from "../components/InfoSection.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
-import { getProducts, getConfig, getSlides, getReviews } from "../lib/sheet";
+import {
+	getProducts,
+	getConfig,
+	getSlides,
+	getReviews,
+	getInfo,
+} from "../lib/sheet";
 
 const config = await getConfig();
 const products = await getProducts();
 const slides = await getSlides();
 const reviews = await getReviews();
+const info = await getInfo();
 
 const novedades = products
 	.filter((p) => p.novedad?.toLowerCase() === "si")
@@ -111,9 +119,8 @@ const catalogo = products
 	</div>
 
 	{reviews.length > 0 && <Reviews reviews={reviews} />}
-
+	<InfoSection info={info} />
 	<Footer config={config} />
-
 	<WhatsAppButton whatsapp={config.whatsapp} />
 
 	<!-- Modal -->

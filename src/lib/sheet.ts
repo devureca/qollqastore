@@ -1,4 +1,4 @@
-import type { Product, Config, Slide, Review } from '../types'
+import type { Product, Config, Slide, Review, Info } from '../types'
 
 const SHEET_ID = import.meta.env.SHEET_ID
 
@@ -105,4 +105,16 @@ export function getCustomFields(products: Product[]): string[] {
     const fixed = ['id', 'nombre', 'descripcion', 'imagen', 'precio', 'disponible', 'categoria']
     if (products.length === 0) return []
     return Object.keys(products[0]).filter(k => !fixed.includes(k) && products[0][k])
+}
+
+export async function getInfo(): Promise<Info> {
+    const rows = await fetchSheet('info')
+    const info: Info = {}
+    for (const row of rows) {
+        if (row[0]?.toLowerCase().trim() === 'campo') continue
+        if (row[0] && row[1]) {
+            info[row[0].toLowerCase().trim()] = row[1].trim()
+        }
+    }
+    return info
 }
