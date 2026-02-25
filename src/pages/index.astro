@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
 import ProductCard from "../components/ProductCard.astro";
 import ProductModal from "../components/ProductModal.astro";
+import OfertasSlider from "../components/OfertasSlider.astro";
 import Reviews from "../components/Reviews.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
@@ -48,33 +49,7 @@ const catalogo = products
 		)
 	}
 
-	<!-- Ofertas -->
-	{
-		ofertas.length > 0 && (
-			<div
-				id="ofertas"
-				class="py-16"
-				style="background: var(--bg-secondary);"
-			>
-				<div class="max-w-7xl mx-auto px-[5%]">
-					<h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">
-						OFERTAS
-					</h2>
-					<p
-						class="text-sm mb-8 mt-1"
-						style="color: var(--text-muted);"
-					>
-						No te lo pierdas
-					</p>
-					<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-						{ofertas.map((product) => (
-							<ProductCard product={product} config={config} />
-						))}
-					</div>
-				</div>
-			</div>
-		)
-	}
+	<OfertasSlider products={products} config={config} />
 
 	<!-- Catálogo random -->
 	<div class="max-w-7xl mx-auto px-[5%] py-16">

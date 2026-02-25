@@ -1,0 +1,112 @@
+---
+import type { Product, Config } from '../types'
+
+interface Props {
+  products: Product[]
+  config: Config
+}
+
+const { products, config } = Astro.props
+const ofertas = products.filter(p => p.precio_oferta)
+---
+
+{ofertas.length > 0 && (
+  <div id="ofertas" class="py-16" style="background: var(--bg-secondary);">
+
+    <!-- Header con flechas -->
+    <div class="max-w-7xl mx-auto px-[5%] mb-8 flex items-start justify-between">
+      <div>
+        <h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 0.05em; color: var(--text);">OFERTAS</h2>
+        <p class="text-sm mt-1" style="color: var(--text-muted);">No te lo pierdas</p>
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button id="ofertas-prev" class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200" style="background: var(--text); color: var(--bg); border: none; cursor: pointer;">
+          ←
+        </button>
+        <button id="ofertas-next" class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200" style="background: var(--text); color: var(--bg); border: none; cursor: pointer;">
+          →
+        </button>
+      </div>
+    </div>
+
+    <!-- Slider -->
+    <div class="overflow-hidden px-[5%] max-w-7xl mx-auto">
+      <div id="ofertas-track" class="flex gap-6 transition-transform duration-500 ease-in-out" style="width: max-content;">
+        {ofertas.map(product => (
+          <div
+            class="product-card ofertas-card shrink-0 cursor-pointer group"
+            data-product={JSON.stringify(product)}
+            data-cat={product.categoria}
+            style="width: min(300px, 75vw);"
+          >
+            <div class="relative rounded-2xl overflow-hidden mb-4" style="aspect-ratio: 3/4; background: var(--bg-card);">
+              {product.imagen
+                ? <img src={product.imagen} alt={product.nombre} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                : <div class="w-full h-full flex items-center justify-center text-5xl">📦</div>
+              }
+              <span class="absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-full" style="background: #111; color: #fff; letter-spacing: 0.08em;">
+                OFERTA
+              </span>
+            </div>
+            <div>
+              <h3 class="font-bold leading-tight mb-1" style="font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.6rem); letter-spacing: 0.03em; color: var(--text);">
+                {product.nombre}
+              </h3>
+              {product.descripcion && (
+                <p class="text-sm mb-3 line-clamp-2 leading-relaxed" style="color: var(--text-muted);">
+                  {product.descripcion}
+                </p>
+              )}
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-lg" style="color: var(--text);">
+                  {config.moneda}{Number(product.precio_oferta).toLocaleString()}
+                </span>
+                <span class="text-sm line-through" style="color: var(--text-muted);">
+                  {config.moneda}{Number(product.precio).toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+)}
+
+<script>
+  const track = document.getElementById('ofertas-track') as HTMLElement | null
+  const prevBtn = document.getElementById('ofertas-prev') as HTMLElement | null
+  const nextBtn = document.getElementById('ofertas-next') as HTMLElement | null
+
+  if (track && prevBtn && nextBtn) {
+    const cards = track.querySelectorAll('.ofertas-card')
+    const total = cards.length
+    let current = 0
+
+    function getCardWidth() {
+      return (cards[0] as HTMLElement).offsetWidth + 24 // width + gap
+    }
+
+    function goTo(index: number) {
+      // Loop infinito
+      if (index < 0) index = total - 1
+      if (index >= total) index = 0
+      current = index
+      track!.style.transform = `translateX(-${current * getCardWidth()}px)`
+    }
+
+    prevBtn.addEventListener('click', () => goTo(current - 1))
+    nextBtn.addEventListener('click', () => goTo(current + 1))
+
+    // Swipe en mobile
+    let startX = 0
+    track.addEventListener('touchstart', e => startX = e.touches[0].clientX)
+    track.addEventListener('touchend', e => {
+      const diff = startX - e.changedTouches[0].clientX
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? goTo(current + 1) : goTo(current - 1)
+      }
+    })
+  }
+</script>
