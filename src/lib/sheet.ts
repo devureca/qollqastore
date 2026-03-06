@@ -118,3 +118,20 @@ export async function getInfo(): Promise<Info> {
     }
     return info
 }
+
+export interface Reserva {
+    id: string
+    nombre: string
+    descripcion: string
+    imagen: string
+    precio?: string
+    categoria?: string
+    fecha_estimada?: string
+    [key: string]: string | undefined
+}
+
+export async function getReservas(): Promise<Reserva[]> {
+    const rows = await fetchSheet('reservas')
+    const objects = rowsToObjects(rows)
+    return objects.filter(r => r.nombre) as Reserva[]
+}

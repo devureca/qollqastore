@@ -46,3 +46,14 @@ export interface Info {
     efectivo?: string
     [key: string]: string | undefined
 }
+
+export interface Reserva {
+    id: string
+    nombre: string
+    descripcion: string
+    imagen: string
+    precio?: string
+    categoria?: string
+    fecha_estimada?: string
+    [key: string]: string | undefined
+}

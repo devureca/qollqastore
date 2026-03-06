@@ -1,0 +1,161 @@
+---
+import type { Reserva } from '../lib/sheet'
+
+interface Props {
+  reservas: Reserva[]
+  whatsapp: string
+}
+
+const { reservas, whatsapp } = Astro.props
+---
+
+{reservas.length > 0 && (
+  <div id="proximos" class="py-16 relative" style="background: #0a0a0a;">
+    <div class="max-w-7xl mx-auto px-[5%]">
+
+      <!-- Header -->
+      <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color: rgba(255,255,255,0.35);">Próximamente</p>
+      <h2 class="mb-10" style="font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 0.05em; color: #fff;">PRÓXIMOS INGRESOS</h2>
+
+      <!-- Slider principal -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+
+        <!-- Info izquierda -->
+        <div id="reserva-info" class="flex flex-col gap-6">
+          <div>
+            <p id="reserva-categoria" class="text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--color-primary);"></p>
+            <h3 id="reserva-nombre" style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem); color: #fff; letter-spacing: 0.03em; line-height: 1;"></h3>
+          </div>
+          <p id="reserva-descripcion" class="text-base md:text-lg leading-relaxed" style="color: rgba(255,255,255,0.55);"></p>
+          <div id="reserva-precio-wrap" class="flex items-center gap-3">
+            <p id="reserva-precio" class="text-3xl font-bold" style="color: #fff;"></p>
+          </div>
+          <div id="reserva-fecha-wrap" class="hidden items-center gap-2">
+            <p id="reserva-fecha" class="text-sm" style="color: rgba(255,255,255,0.45);"></p>
+          </div>
+          
+            <a id="reserva-btn"
+            href="#"
+            target="_blank"
+            class="inline-flex items-center gap-3 px-6 py-4 rounded-full font-bold text-sm transition-all duration-200 w-fit"
+            style="background: #fff; color: #000;"
+            onmouseenter="this.style.background='var(--color-primary)'; this.style.color='#fff'"
+            onmouseleave="this.style.background='#fff'; this.style.color='#000'"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span id="reserva-btn-text">Reservar por WhatsApp</span>
+          </a>
+        </div>
+
+        <!-- Imagen derecha -->
+        <div class="flex flex-col gap-4">
+          <!-- Imagen principal -->
+          <div class="rounded-2xl overflow-hidden" style="aspect-ratio: 4/3; background: #1a1a1a;">
+            <img
+              id="reserva-imagen"
+              src=""
+              alt=""
+              class="w-full h-full object-cover transition-opacity duration-500"
+            />
+          </div>
+
+          <!-- Miniaturas -->
+          {reservas.length > 1 && (
+            <div class="flex gap-3 overflow-x-auto pb-1" style="scrollbar-width: none;">
+              {reservas.map((r, i) => (
+                <button
+                  class="reserva-thumb shrink-0 rounded-xl overflow-hidden transition-all duration-200"
+                  data-index={i}
+                  style={`width: 80px; height: 100px; opacity: ${i === 0 ? 1 : 0.4}; border: 2px solid ${i === 0 ? 'white' : 'transparent'}; background: #1a1a1a;`}
+                >
+                  {r.imagen
+                    ? <img src={r.imagen} alt={r.nombre} class="w-full h-full object-cover" />
+                    : <div class="w-full h-full flex items-center justify-center text-2xl">📦</div>
+                  }
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
+
+<script define:vars={{ reservas, whatsapp }}>
+  const nombreEl = document.getElementById('reserva-nombre')
+  const categoriaEl = document.getElementById('reserva-categoria')
+  const descripcionEl = document.getElementById('reserva-descripcion')
+  const precioEl = document.getElementById('reserva-precio')
+  const fechaWrap = document.getElementById('reserva-fecha-wrap')
+  const fechaEl = document.getElementById('reserva-fecha')
+  const btnEl = document.getElementById('reserva-btn')
+  const btnText = document.getElementById('reserva-btn-text')
+  const imagenEl = document.getElementById('reserva-imagen')
+  const thumbs = document.querySelectorAll('.reserva-thumb')
+
+  function goTo(index) {
+    const r = reservas[index]
+
+    // Fade out
+    if (imagenEl) imagenEl.style.opacity = '0'
+
+    setTimeout(() => {
+      if (nombreEl) nombreEl.textContent = r.nombre
+      if (categoriaEl) categoriaEl.textContent = r.categoria || ''
+      if (descripcionEl) descripcionEl.textContent = r.descripcion || ''
+
+      // Precio
+      if (precioEl) {
+        if (r.precio) {
+          precioEl.textContent = `S/. ${Number(r.precio).toLocaleString()}`
+          precioEl.style.color = '#fff'
+          precioEl.parentElement.style.display = 'flex'
+        } else {
+          precioEl.parentElement.style.display = 'none'
+        }
+      }
+
+      // Fecha estimada
+      if (fechaWrap && fechaEl) {
+        if (r.fecha_estimada) {
+          fechaWrap.classList.remove('hidden')
+          fechaEl.textContent = `Disponible aproximadamente: ${r.fecha_estimada}`
+        } else {
+          fechaWrap.classList.add('hidden')
+        }
+      }
+
+      // Botón WhatsApp
+      const msg = r.precio
+        ? `Hola! Quiero reservar: ${r.nombre}`
+        : `Hola! Me interesa consultar y reservar: ${r.nombre}. ¿Cuál es el precio?`
+      if (btnEl) btnEl.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`
+      if (btnText) btnText.textContent = r.precio ? 'Reservar por WhatsApp' : 'Consultar y Reservar'
+
+      // Imagen
+      if (imagenEl) {
+        imagenEl.src = r.imagen || ''
+        imagenEl.alt = r.nombre
+        imagenEl.style.opacity = '1'
+      }
+
+      // Miniaturas
+      thumbs.forEach((thumb, i) => {
+        thumb.style.opacity = i === index ? '1' : '0.4'
+        thumb.style.borderColor = i === index ? 'white' : 'transparent'
+      })
+    }, 250)
+  }
+
+  // Miniaturas click
+  thumbs.forEach((thumb, i) => {
+    thumb.addEventListener('click', () => goTo(i))
+  })
+
+  // Inicializar con el primero
+  if (reservas.length > 0) goTo(0)
+</script>
