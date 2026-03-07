@@ -1,9 +1,19 @@
 # 🏪 QollqaStore
 
 **Catálogo web gratuito.**  
-Sin Firebase. Sin APIs. Solo Google Sheets y GitHub.
+Sin Firebase. Sin APIs. Solo Google Sheets y Vercel.
 
 🌐 **Demo:** https://qollqastore.vercel.app/
+
+---
+
+## Instalar mi tienda
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/devureca/qollqastore&env=SHEET_ID&envDescription=Copia%20el%20ID%20de%20tu%20Google%20Sheet%20y%20pégalo%20aquí&envLink=https://github.com/devureca/qollqastore%23cómo-obtener-el-sheet-id)
+
+**Solo necesitas:**
+1. Una cuenta de **Google** (Gmail) — para el Sheet
+2. Una cuenta de **Vercel** (gratis) — puedes crearla con Gmail
 
 ---
 
@@ -13,45 +23,20 @@ QollqaStore lee los datos directamente desde un Google Sheet que tú controlas. 
 
 ---
 
-## Requisitos
+## Primeros pasos
 
-- Cuenta de **GitHub** (gratis)
-- Cuenta de **Google** (Gmail) — para el Sheet
-- Cuenta de **Vercel** (gratis) — para el hosting
-
----
-
-## Instalación en 10 pasos
-
-### 1. Hacer fork del repositorio
-
-Ingresa a https://github.com/devureca/qollqastore y haz clic en **"Use this template" → "Create a new repository"**.
-
-### 2. Copiar el Google Sheet template
+### 1. Copiar el Google Sheet template
 
 Abre el Sheet de ejemplo:  
 👉 [Sheet Template](https://docs.google.com/spreadsheets/d/1d-iR3BSzu50Q6_PnzMRMYp8PcLLSGvPVHKTpYxqHmS8)
 
 Haz clic en **Archivo → Hacer una copia** para tener tu propia versión.
 
-### 3. Completar los datos
-
-El Sheet tiene 6 pestañas:
-
-| Pestaña | Descripción |
-|---------|-------------|
-| `config` | Nombre de la tienda, colores, redes sociales |
-| `productos` | Tu catálogo de productos |
-| `slider` | Imágenes del hero slider |
-| `reservas` | Productos próximos a llegar |
-| `resenas` | Testimonios de clientes |
-| `info` | Dirección, horario, métodos de pago |
-
-### 4. Compartir el Sheet
+### 2. Compartir el Sheet
 
 En tu Sheet haz clic en **Compartir → Cualquier persona con el enlace → Lector**.
 
-### 5. Copiar el ID del Sheet
+### 3. Obtener el Sheet ID
 
 En la barra de direcciones del navegador verás una URL así:
 ```
@@ -59,27 +44,13 @@ https://docs.google.com/spreadsheets/d/ESTE_ES_EL_ID/edit
 ```
 Copia el ID que está entre `/d/` y `/edit`.
 
-### 6. Crear cuenta en Vercel
+### 4. Hacer clic en el botón "Deploy with Vercel"
 
-Ingresa a https://vercel.com y crea una cuenta con tu GitHub.
+- Si no tienes cuenta en Vercel, puedes crearla con Gmail en ese momento
+- Cuando te pida el `SHEET_ID`, pega el ID que copiaste en el paso anterior
+- Haz clic en **Deploy** y espera 1-2 minutos
 
-### 7. Importar el proyecto
-
-- Haz clic en **"Add New Project"**
-- Selecciona tu fork de `qollqastore`
-- Vercel lo detecta como Astro automáticamente
-
-### 8. Agregar la variable de entorno
-
-Antes de hacer el deploy, en la sección **"Environment Variables"**:
-- **Name:** `SHEET_ID`
-- **Value:** el ID que copiaste en el paso 5
-
-### 9. Deploy
-
-Haz clic en **"Deploy"** y espera 1-2 minutos.
-
-### 10. ¡Listo! 🎉
+### 5. ¡Listo! 🎉
 
 Tu tienda está en línea. Cada vez que edites el Sheet los cambios se ven en segundos.
 
