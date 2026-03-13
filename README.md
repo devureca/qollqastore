@@ -25,11 +25,9 @@ QollqaStore lee los datos directamente desde un Google Sheet que tú controlas. 
 
 ## Instalación en 10 pasos
 
-### 1. Crear cuenta en GitHub y hacer fork del repositorio
+### 1. Hacer fork del repositorio
 
-Si aún no tienes cuenta en GitHub, créala en https://github.com usando tu Gmail.
-
-Una vez dentro, ingresa a https://github.com/devureca/qollqastore y haz clic en **"Use this template" → "Create a new repository"**.
+Ingresa a https://github.com/devureca/qollqastore y haz clic en **"Use this template" → "Create a new repository"**.
 
 ### 2. Copiar el Google Sheet template
 
