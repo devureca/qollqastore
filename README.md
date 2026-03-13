@@ -29,6 +29,8 @@ QollqaStore lee los datos directamente desde un Google Sheet que tú controlas. 
 
 Ingresa a https://github.com/devureca/qollqastore y haz clic en **"Use this template" → "Create a new repository"**.
 
+> 💡 Puedes ponerle el nombre de tu tienda al repositorio, por ejemplo `tutienda`. Ese nombre será parte de tu URL en Vercel: `tutienda.vercel.app`
+
 ### 2. Copiar el Google Sheet template
 
 Abre el Sheet de ejemplo:  
