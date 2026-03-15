@@ -115,7 +115,7 @@ const disponibles = products.filter(
     <ProductModal />
     <WhatsAppButton whatsapp={config.whatsapp} />
 
-    <script define:vars={{ moneda: config.moneda }}>
+    <script define:vars={{ moneda: config.moneda, whatsapp: config.whatsapp }}>
         const PRIMARY = getComputedStyle(document.documentElement)
             .getPropertyValue("--color-primary")
             .trim();
@@ -225,7 +225,7 @@ const disponibles = products.filter(
                 const data = JSON.parse(
                     card.getAttribute("data-product") || "{}",
                 );
-                window.__openModal(data, moneda, PRIMARY);
+                window.__openModal(data, moneda, PRIMARY, whatsapp);
             });
         });
 
