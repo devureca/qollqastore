@@ -15,21 +15,21 @@ QollqaStore lee los datos directamente desde un Google Sheet que tú controlas. 
 
 ## Requisitos
 
-- Cuenta de **GitHub** (gratis) — puedes registrarte con tu Gmail en github.com
+- Cuenta de **GitHub** (gratis) — es el primer paso, regístrate en github.com con tu Gmail
 - Cuenta de **Google** (Gmail) — para el Sheet
-- Cuenta de **Vercel** (gratis) — para el hosting
+- Cuenta de **Vercel** (gratis) — se crea con tu cuenta de GitHub
 
-> 💡 Si no tienes cuenta de GitHub, créala primero en github.com antes de continuar.
+> 💡 Si no tienes cuenta de GitHub, créala primero en github.com antes de continuar. Solo toma 2 minutos y puedes usar tu Gmail.
 
 ---
 
-## Instalación en 10 pasos
+## Instalación
 
 ### 1. Hacer fork del repositorio
 
-Ingresa a https://github.com/devureca/qollqastore y haz clic en **"Use this template" → "Create a new repository"**.
+Ingresa a https://github.com/devureca/qollqastore y haz clic en **"Fork" → "Create fork"**.
 
-> 💡 Puedes ponerle el nombre de tu tienda al repositorio, por ejemplo `tutienda`. Ese nombre será parte de tu URL en Vercel: `tutienda.vercel.app`
+> 💡 Puedes cambiar el nombre del fork al nombre de tu tienda, por ejemplo `tutienda`. Ese nombre será parte de tu URL en Vercel: `tutienda.vercel.app`
 
 ### 2. Copiar el Google Sheet template
 
@@ -51,6 +51,8 @@ El Sheet tiene 6 pestañas:
 | `resenas` | Testimonios de clientes |
 | `info` | Dirección, horario, métodos de pago |
 
+> ⚠️ Los nombres de las pestañas deben escribirse exactamente como aparecen aquí, en minúsculas y sin tildes. Si cambias el nombre de una pestaña la web no podrá leer los datos.
+
 ### 4. Compartir el Sheet
 
 En tu Sheet haz clic en **Compartir → Cualquier persona con el enlace → Lector**.
@@ -58,19 +60,28 @@ En tu Sheet haz clic en **Compartir → Cualquier persona con el enlace → Lect
 ### 5. Copiar el ID del Sheet
 
 En la barra de direcciones del navegador verás una URL así:
+
 ```
-https://docs.google.com/spreadsheets/d/ESTE_ES_EL_ID/edit
+https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms/edit
 ```
-Copia el ID que está entre `/d/` y `/edit`.
+
+El ID es la cadena larga de letras y números que está después de `/d/` y antes de `/edit`:
+
+```
+1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms
+```
+
+Copia solo esa parte, sin barras ni nada más.
 
 ### 6. Crear cuenta en Vercel
 
-Ingresa a https://vercel.com y crea una cuenta con tu GitHub.
+Ingresa a https://vercel.com y haz clic en **"Continue with GitHub"**.
 
 ### 7. Importar el proyecto
 
 - Haz clic en **"Add New Project"**
-- Selecciona tu fork de `qollqastore`
+- Si es la primera vez, Vercel te pedirá conectar tu GitHub. Haz clic en **"Install GitHub"** y sigue los pasos
+- Una vez conectado, selecciona tu fork de `qollqastore`
 - Vercel lo detecta como Astro automáticamente
 
 ### 8. Agregar la variable de entorno
@@ -86,6 +97,14 @@ Haz clic en **"Deploy"** y espera 1-2 minutos.
 ### 10. ¡Listo! 🎉
 
 Tu tienda está en línea. Cada vez que edites el Sheet los cambios se ven en segundos.
+
+---
+
+## Actualizaciones automáticas
+
+QollqaStore incluye un sistema de actualización automática. Cada lunes a medianoche tu tienda revisa si hay mejoras disponibles y las aplica sola, sin que tengas que hacer nada.
+
+Para que funcione correctamente **no modifiques los archivos de código**. Toda la personalización se hace desde el Google Sheet.
 
 ---
 
@@ -186,6 +205,7 @@ Todo se configura desde la pestaña `config` del Sheet:
 
 ## Características
 
+- ✅ Actualización automática cada lunes con las últimas mejoras
 - ✅ Actualización instantánea al editar el Sheet
 - ✅ Modo oscuro / Modo claro
 - ✅ 100% responsive (móvil y escritorio)
@@ -211,7 +231,16 @@ Todo se configura desde la pestaña `config` del Sheet:
 
 ## Licencia
 
-MIT — libre para uso personal y comercial.
+Este proyecto es de uso libre, personal y comercial, bajo las siguientes condiciones:
+
+- ✅ Puedes usar QollqaStore para tu negocio sin costo
+- ✅ Puedes personalizar tu tienda desde el Google Sheet
+- ✅ Puedes usar tu propio dominio
+- ❌ No puedes modificar el código fuente
+- ❌ No puedes redistribuir el proyecto como tuyo
+- ❌ No puedes eliminar el texto "Powered by QollqaStore" del footer
+
+El crédito "Powered by QollqaStore" en el footer es obligatorio y no debe ser removido.
 
 ---
 
