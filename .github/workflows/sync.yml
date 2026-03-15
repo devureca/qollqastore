@@ -1,0 +1,24 @@
+name: Sync con QollqaStore
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Cada lunes a medianoche
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Sincronizar con QollqaStore original
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git remote add upstream https://github.com/devureca/qollqastore.git || true
+          git fetch upstream
+          git merge upstream/master --allow-unrelated-histories --no-edit -m "chore: sync con QollqaStore"
+          git push origin master
