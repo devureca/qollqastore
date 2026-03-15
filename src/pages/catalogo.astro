@@ -17,7 +17,11 @@ const disponibles = products.filter(
 );
 ---
 
-<Layout title={`Catálogo — ${config.nombre}`} color={config.color_primario}>
+<Layout
+    title={config.nombre}
+    color={config.color_primario}
+    faviconLetras={config.favicon_letras || config.nombre.charAt(0)}
+>
     <Navbar config={config} />
 
     <!-- Header -->

@@ -6,7 +6,7 @@ export interface Product {
     precio: string
     disponible: string
     categoria: string
-    [key: string]: string // cabeceras custom
+    [key: string]: string
 }
 
 export interface Config {
@@ -18,7 +18,8 @@ export interface Config {
     facebook: string
     tiktok: string
     moneda: string
-    [key: string]: string
+    favicon_letras?: string
+    [key: string]: string | undefined
 }
 
 export interface Slide {
