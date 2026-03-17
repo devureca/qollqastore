@@ -35,7 +35,7 @@ const ofertas = products.filter((p) => p.precio_oferta).slice(0, 4);
 const catalogo = products
 	.filter((p) => p.disponible?.toLowerCase() !== "no")
 	.sort(() => Math.random() - 0.5)
-	.slice(0, 8);
+	.slice(0, 10);
 ---
 
 <Layout

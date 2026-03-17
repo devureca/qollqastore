@@ -10,17 +10,27 @@ const { slides } = Astro.props
 
 {slides.length > 0 && (
   <div class="px-4 md:px-6 pt-4 md:pt-6">
-    <div class="relative rounded-2xl md:rounded-3xl overflow-hidden" style="height: 85vh; background: #111;">
+    <div class="relative rounded-2xl md:rounded-3xl overflow-hidden" style="height: 92vh; max-height: 900px; min-height: 500px; background: #111;">
 
       <!-- Slides -->
       {slides.map((slide, i) => (
         <div
-          class="slide absolute inset-0 bg-cover bg-center transition-opacity duration-700"
+          class={`slide absolute inset-0 transition-opacity duration-700 ${i === 0 ? 'active' : ''}`}
           data-index={i}
-          style={`opacity: ${i === 0 ? 1 : 0}; background-image: url('${slide.imagen}');`}
+          style={`opacity: ${i === 0 ? 1 : 0};`}
         >
-          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%);" />
-          <div class="absolute bottom-24 md:bottom-28 left-6 md:left-12 max-w-xl">
+          {slide.imagen && (
+            <img
+              src={slide.imagen}
+              alt={slide.titulo || ''}
+              class="slide-img"
+              style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top;"
+            />
+          )}
+
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.15) 55%, transparent 100%); z-index: 1;" />
+
+          <div class="absolute bottom-24 md:bottom-28 left-6 md:left-12 max-w-xl" style="z-index: 2;">
             {slide.titulo && (
               <h1 class="text-white tracking-wide leading-none" style="font-family: var(--font-display); font-size: clamp(2.5rem, 7vw, 5.5rem);">
                 {slide.titulo}
@@ -36,7 +46,7 @@ const { slides } = Astro.props
       ))}
 
       <!-- Barra inferior de navegación -->
-      <div class="absolute bottom-0 left-0 right-0" style="border-top: 1px solid rgba(255,255,255,0.15);">
+      <div class="absolute bottom-0 left-0 right-0" style="border-top: 1px solid rgba(255,255,255,0.15); z-index: 3;">
         <div class="grid" style={`grid-template-columns: repeat(${slides.length}, 1fr);`}>
           {slides.map((slide, i) => (
             <button
@@ -44,7 +54,6 @@ const { slides } = Astro.props
               data-index={i}
               style="background: none; border: none; border-right: 1px solid rgba(255,255,255,0.1); cursor: pointer;"
             >
-              <!-- Línea activa -->
               <div
                 class="slide-indicator absolute top-0 left-0 right-0 h-0.5 transition-all duration-500"
                 style={`background: white; opacity: ${i === 0 ? 1 : 0.2}; transform: scaleX(${i === 0 ? 1 : 0}); transform-origin: left;`}
@@ -52,7 +61,6 @@ const { slides } = Astro.props
               <span class="block text-xs md:text-sm font-bold mb-1" style={`color: ${i === 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)'};`}>
                 0{i + 1}
               </span>
-              <!-- Solo visible en desktop -->
               {slide.titulo && (
                 <span class="hidden md:block text-xs truncate" style="color: rgba(255,255,255,0.45);">
                   {slide.titulo}
@@ -67,16 +75,27 @@ const { slides } = Astro.props
   </div>
 )}
 
+<style>
+  @keyframes kenburns {
+    from { transform: scale(1); }
+    to   { transform: scale(1.08); }
+  }
+
+  .slide.active .slide-img {
+    animation: kenburns 8s ease-out forwards;
+  }
+</style>
+
 <script>
   const slides = document.querySelectorAll('.slide')
   const btns = document.querySelectorAll('.slide-btn')
-  const indicators = document.querySelectorAll('.slide-indicator')
   let current = 0
   let timer: ReturnType<typeof setInterval>
 
   function goTo(index: number) {
     // Ocultar actual
     ;(slides[current] as HTMLElement).style.opacity = '0'
+    ;(slides[current] as HTMLElement).classList.remove('active')
     ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.opacity = '0.2'
     ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.transform = 'scaleX(0)'
     ;(btns[current].querySelectorAll('span')[0] as HTMLElement).style.color = 'rgba(255,255,255,0.35)'
@@ -85,6 +104,15 @@ const { slides } = Astro.props
 
     // Mostrar nuevo
     ;(slides[current] as HTMLElement).style.opacity = '1'
+
+    // Reiniciar Ken Burns sin salto visual
+    const img = (slides[current] as HTMLElement).querySelector('.slide-img') as HTMLImageElement
+    if (img) {
+      const clone = img.cloneNode(true) as HTMLImageElement
+      img.parentNode?.replaceChild(clone, img)
+    }
+    ;(slides[current] as HTMLElement).classList.add('active')
+
     ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.opacity = '1'
     ;(btns[current].querySelector('.slide-indicator') as HTMLElement).style.transform = 'scaleX(1)'
     ;(btns[current].querySelectorAll('span')[0] as HTMLElement).style.color = 'rgba(255,255,255,0.9)'
@@ -95,7 +123,7 @@ const { slides } = Astro.props
     if (slides.length > 1) {
       timer = setInterval(() => {
         goTo((current + 1) % slides.length)
-      }, 5000)
+      }, 6000)
     }
   }
 
