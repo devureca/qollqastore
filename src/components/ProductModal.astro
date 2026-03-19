@@ -50,17 +50,14 @@
         const extras = Object.entries(data).filter(
             ([k, v]) => !FIXED.includes(k) && v,
         );
-
-        // Imágenes disponibles
         const imagenes = [
             data.imagen1,
             data.imagen2,
             data.imagen3,
             data.imagen4,
         ].filter(Boolean);
-        const mainImg = imagenes[0] || null;
+        const hasMultiple = imagenes.length > 1;
 
-        // Armar mensaje de WhatsApp
         const precio = data.precio_oferta
             ? `${moneda}${Number(data.precio_oferta).toLocaleString()}`
             : data.precio
@@ -82,69 +79,67 @@
         const waUrl = `https://wa.me/${whatsapp}?text=${encodeURIComponent(lines)}`;
 
         modalContent.innerHTML = `
-          <!-- Imagen desktop -->
-          <div style="background: var(--bg-card); overflow: hidden; border-radius: 24px 0 0 24px; display: flex; flex-direction: column;" class="hidden md:flex">
-            <!-- Imagen principal -->
-            <div id="main-img-wrap" style="flex: 1; overflow: hidden;">
+          <!-- Columna izquierda: slider de imágenes -->
+          <div style="background: var(--bg-card); border-radius: 24px 0 0 24px; position: relative; overflow: hidden;">
+
+            <!-- Contenedor slider con altura fija -->
+            <div class="h-[340px] md:h-[500px]" style="position: relative; width: 100%; overflow: hidden;">
+
+              <!-- Track de imágenes -->
+              <div id="img-track" style="display: flex; height: 100%; transition: transform 0.4s ease; width: ${imagenes.length * 100}%;">
+                ${
+                    imagenes.length > 0
+                        ? imagenes
+                              .map(
+                                  (img) => `
+                      <div style="width: ${100 / imagenes.length}%; height: 100%; flex-shrink: 0;">
+                        <img src="${img}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />
+                      </div>
+                    `,
+                              )
+                              .join("")
+                        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">📦</div>`
+                }
+              </div>
+
+              <!-- Flechas solo si hay más de 1 imagen -->
               ${
-                  mainImg
-                      ? `<img id="main-img" src="${mainImg}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
-                      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">📦</div>`
+                  hasMultiple
+                      ? `
+                <button id="img-prev"
+                  style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:2;">
+                  ←
+                </button>
+                <button id="img-next"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:2;">
+                  →
+                </button>
+              `
+                      : ""
+              }
+
+              <!-- Indicadores de puntos -->
+              ${
+                  hasMultiple
+                      ? `
+                <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2;">
+                  ${imagenes
+                      .map(
+                          (_, i) => `
+                    <div class="img-dot" data-index="${i}" style="width:6px;height:6px;border-radius:50%;background:${i === 0 ? "#fff" : "rgba(255,255,255,0.4)"};transition:background 0.2s;"></div>
+                  `,
+                      )
+                      .join("")}
+                </div>
+              `
+                      : ""
               }
             </div>
-            <!-- Miniaturas -->
-            ${
-                imagenes.length > 1
-                    ? `
-              <div style="display:flex;gap:8px;padding:12px;background:var(--bg-card);">
-                ${imagenes
-                    .map(
-                        (img, i) => `
-                  <button onclick="document.getElementById('main-img').src='${img}'; this.parentElement.querySelectorAll('button').forEach(b=>b.style.borderColor='var(--border)'); this.style.borderColor='${primary}';"
-                    style="width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid ${i === 0 ? primary : "var(--border)"};padding:0;cursor:pointer;flex-shrink:0;">
-                    <img src="${img}" style="width:100%;height:100%;object-fit:cover;" />
-                  </button>
-                `,
-                    )
-                    .join("")}
-              </div>
-            `
-                    : ""
-            }
+
           </div>
 
-          <!-- Imagen mobile -->
-          <div class="block md:hidden" style="background: var(--bg-card); overflow: hidden; border-radius: 24px 24px 0 0;">
-            <div style="height: 280px; overflow: hidden;">
-              ${
-                  mainImg
-                      ? `<img id="main-img-mobile" src="${mainImg}" alt="${data.nombre}" style="width:100%;height:100%;object-fit:cover;" />`
-                      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;">📦</div>`
-              }
-            </div>
-            <!-- Miniaturas mobile -->
-            ${
-                imagenes.length > 1
-                    ? `
-              <div style="display:flex;gap:8px;padding:10px;overflow-x:auto;">
-                ${imagenes
-                    .map(
-                        (img, i) => `
-                  <button onclick="document.getElementById('main-img-mobile').src='${img}'; this.parentElement.querySelectorAll('button').forEach(b=>b.style.borderColor='var(--border)'); this.style.borderColor='${primary}';"
-                    style="width:48px;height:48px;border-radius:8px;overflow:hidden;border:2px solid ${i === 0 ? primary : "var(--border)"};padding:0;cursor:pointer;flex-shrink:0;">
-                    <img src="${img}" style="width:100%;height:100%;object-fit:cover;" />
-                  </button>
-                `,
-                    )
-                    .join("")}
-              </div>
-            `
-                    : ""
-            }
-          </div>
-
-          <!-- Info -->
-          <div style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+          <!-- Columna derecha: info -->
+          <div style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem; justify-content: center; overflow-y: auto; max-height: 420px;">
             ${data.categoria ? `<p style="font-size:0.7rem;font-weight:700;color:${primary};letter-spacing:0.1em;text-transform:uppercase;">${data.categoria}</p>` : ""}
             <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:0.03em;line-height:1.1;color:var(--text);">${data.nombre}</h2>
             ${data.descripcion ? `<p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">${data.descripcion}</p>` : ""}
@@ -189,6 +184,42 @@
             }
           </div>
         `;
+
+        // Lógica del slider
+        if (hasMultiple) {
+            const track = document.getElementById("img-track");
+            const dots = document.querySelectorAll(".img-dot");
+            const prevBtn = document.getElementById("img-prev");
+            const nextBtn = document.getElementById("img-next");
+            let current = 0;
+            const total = imagenes.length;
+
+            function goTo(index) {
+                if (index < 0) index = total - 1;
+                if (index >= total) index = 0;
+                current = index;
+                track.style.transform = `translateX(-${current * (100 / total)}%)`;
+                dots.forEach((dot, i) => {
+                    dot.style.background =
+                        i === current ? "#fff" : "rgba(255,255,255,0.4)";
+                });
+            }
+
+            prevBtn?.addEventListener("click", () => goTo(current - 1));
+            nextBtn?.addEventListener("click", () => goTo(current + 1));
+
+            // Swipe mobile
+            let startX = 0;
+            track?.addEventListener(
+                "touchstart",
+                (e) => (startX = e.touches[0].clientX),
+            );
+            track?.addEventListener("touchend", (e) => {
+                const diff = startX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 40)
+                    diff > 0 ? goTo(current + 1) : goTo(current - 1);
+            });
+        }
 
         modal.style.display = "flex";
     };
