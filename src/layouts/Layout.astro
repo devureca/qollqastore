@@ -26,8 +26,19 @@ const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100
 
 const faviconUrl = `data:image/svg+xml,${encodeURIComponent(faviconSvg)}`;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const socialImageURL = image ? new URL(image, Astro.site) : null;
+const siteUrl = Astro.site
+    ? Astro.site.origin
+    : "https://qollqastore.vercel.app";
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+
+let socialImageURL = null;
+if (image) {
+    try {
+        socialImageURL = new URL(image, siteUrl);
+    } catch (e) {
+        socialImageURL = null;
+    }
+}
 ---
 
 <!doctype html>

@@ -119,7 +119,7 @@ const { reservas, whatsapp } = Astro.props
 
   let currentIndex = 0;
 
-  function goTo(index) {
+  function goTo(index, isFirstLoad = false) {
     if (index < 0) index = reservas.length - 1;
     if (index >= reservas.length) index = 0;
     
@@ -170,7 +170,7 @@ const { reservas, whatsapp } = Astro.props
       })
 
       const activeThumb = thumbs[currentIndex];
-      if (activeThumb) {
+      if (activeThumb && !isFirstLoad) {
         activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
     }, 250)
@@ -183,5 +183,5 @@ const { reservas, whatsapp } = Astro.props
     thumb.addEventListener('click', () => goTo(i))
   })
 
-  if (reservas.length > 0) goTo(0)
+  if (reservas.length > 0) goTo(0, true)
 </script>
